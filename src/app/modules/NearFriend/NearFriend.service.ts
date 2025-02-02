@@ -51,6 +51,9 @@ const nearFriends = async (
     },
   } = userProfile;
 
+  // Exclude the current user from results
+  query.userId = { $ne: userId };
+
   const userQuery = new QueryBuilder(UserProfile.find(), query)
     .geoWithin('location', [userLongitude, userLatitude], 10) // 10km radius
     .filter(['name', 'address', 'email']) // Add necessary filterable fields
@@ -70,7 +73,9 @@ const nearFriends = async (
   //   },
   // }).populate('petsProfileId');
 
-  console.log({meta, result})
+  console.log({ meta, result });
+
+  console.log({ result });
 
   return { meta, result };
   // return nearbyPets;
