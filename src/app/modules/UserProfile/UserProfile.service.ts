@@ -79,15 +79,9 @@ const getOneById = async (id: string): Promise<TUserProfile | null> => {
  */
 const updateById = async (
   id: string,
-  file: Express.Multer.File,
+
   data: Partial<TUserProfile>,
 ): Promise<TUserProfile | null> => {
-  if (file) {
-    const ImageUrl = file.path.replace('public\\', '');
-    data.image = ImageUrl;
-  }
-  const previousImage = await UserProfile.findById(id);
-
   const result = await UserProfile.findOneAndUpdate({ userId: id }, data, {
     new: true,
     runValidators: true,

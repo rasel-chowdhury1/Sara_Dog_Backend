@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
 import AppError from '../../error/AppError';
+import catchAsync from '../../utils/catchAsync';
+import { storeFile } from '../../utils/fileHelper';
+import sendResponse from '../../utils/sendResponse';
 import { UserProfileService } from './UserProfile.service';
-import { User } from '../user/user.models';
 
 /**
  * Create a new UserProfile.
@@ -62,16 +62,19 @@ const getOneById = catchAsync(async (req: Request, res: Response) => {
  */
 const updateById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
-  const file = req.file as Express.Multer.File;
+  const data = { ...req.body };
+  if (req?.file) {
+    data.image = storeFile('profile', req?.file?.filename);
+  }
 
-  const result = await UserProfileService.updateById(id, file, data);
-  if (!result) throw new Error('UserProfile not found');
+  const result = await UserProfileService.updateById(id, data);
+  console.log('==== result ==== ', result);
+  // if (!result) throw new Error('UserProfile not found');
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'UserProfile updated successfully!',
-    data: result,
+    data: 'result',
   });
 });
 
