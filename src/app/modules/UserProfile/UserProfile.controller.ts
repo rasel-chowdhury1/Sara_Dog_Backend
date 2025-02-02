@@ -69,12 +69,11 @@ const updateById = catchAsync(async (req: Request, res: Response) => {
 
   const result = await UserProfileService.updateById(id, data);
   console.log('==== result ==== ', result);
-  // if (!result) throw new Error('UserProfile not found');
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'UserProfile updated successfully!',
-    data: 'result',
+    data: result,
   });
 });
 
