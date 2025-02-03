@@ -6,9 +6,7 @@ import { Chat } from './Chat.models';
 const addNewChat = async (
   // file: Express.Multer.File,
   data: TChat,
-): Promise<TChat> => {
-  console.log(data);
-
+) => {
   // Check if the creator exists
   const isCreatorExist = await User.findOne({ _id: data?.createdBy });
   if (!isCreatorExist) {
@@ -19,6 +17,19 @@ const addNewChat = async (
   const foundUsers = await User.find({ _id: { $in: data?.users } });
   if (foundUsers.length !== data?.users.length) {
     throw new Error('One or more users not found');
+  }
+
+  // **Check for existing individual chat (not a group chat)**
+  if (!data?.isGroupChat) {
+    const existingChat = await Chat.findOne({
+      users: { $all: data.users, $size: 2 }, // Ensure both users exist in the chat
+      isGroupChat: false, // Must be an individual chat
+    });
+
+    if (existingChat) {
+      throw new Error('Chat between these users already exists');
+      // return 'Chat between these users already exists';
+    }
   }
 
   // If it's a group chat, perform additional validations

@@ -15,9 +15,11 @@ const addNewChat = catchAsync(async (req: Request, res: Response) => {
 
   const chatData = { ...req.body };
   if (req?.file) {
-    chatData.groupProfilePicture = storeFile('chat', req?.file?.filename);
+    chatData.groupProfilePicture = storeFile('profile', req?.file?.filename);
   }
+  console.log("chat data ====>>>> ",{chatData});
   const result = await ChatService.addNewChat(chatData);
+  
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
