@@ -5,8 +5,22 @@ import sendResponse from '../../utils/sendResponse';
 import { storeFile } from '../../utils/fileHelper';
 
 import httpStatus from 'http-status';
+import { USER_ROLE } from './user.constants';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
+  req.body.role = USER_ROLE.USER;
+  const createUserToken = await userService.createUserToken(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Check email for OTP',
+    data: { createUserToken },
+  });
+});
+
+const createUserAdmin = catchAsync(async (req: Request, res: Response) => {
+  req.body.role = USER_ROLE.ADMIN;
   const createUserToken = await userService.createUserToken(req.body);
 
   sendResponse(res, {
@@ -137,6 +151,7 @@ const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
 
 export const userController = {
   createUser,
+  createUserAdmin,
   userCreateVarification,
   getUserById,
   getMyProfile,

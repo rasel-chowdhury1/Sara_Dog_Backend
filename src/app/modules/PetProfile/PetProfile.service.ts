@@ -90,14 +90,14 @@ const getOneById = async (id: string): Promise<TPetProfile | null> => {
  */
 const updateById = async (
   id: string,
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TPetProfile>,
 ): Promise<TPetProfile | null> => {
-  if (file) {
-    const ImageUrl = file.path.replace('public\\', '');
-    data.image = ImageUrl;
-  }
-  const previousImage = await PetProfile.findOne({ userId: id });
+  // if (file) {
+  //   const ImageUrl = file.path.replace('public\\', '');
+  //   data.image = ImageUrl;
+  // }
+  // const previousImage = await PetProfile.findOne({ userId: id });
 
   const result = await PetProfile.findOneAndUpdate({ userId: id }, data, {
     new: true,

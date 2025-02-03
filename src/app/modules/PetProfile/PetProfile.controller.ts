@@ -4,6 +4,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import AppError from '../../error/AppError';
 import { PetProfileService } from './PetProfile.service';
+import { storeFile } from '../../utils/fileHelper';
 
 /**
  * Create a new UserProfile.
@@ -60,10 +61,15 @@ const getOneById = catchAsync(async (req: Request, res: Response) => {
  */
 const updateById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
-  const file = req.file as Express.Multer.File;
+  // const data = req.body;
+  // const file = req.file as Express.Multer.File;
 
-  const result = await PetProfileService.updateById(id, file, data);
+  const data = { ...req.body };
+    if (req?.file) {
+      data.image = storeFile('profile', req?.file?.filename);
+    }
+
+  const result = await PetProfileService.updateById(id, data);
   if (!result) throw new Error('UserProfile not found');
   sendResponse(res, {
     statusCode: httpStatus.OK,

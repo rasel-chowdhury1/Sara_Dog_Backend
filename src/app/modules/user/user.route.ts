@@ -17,6 +17,13 @@ userRoutes
     validateRequest(userValidation?.userValidationSchema),
     userController.createUser,
   )
+  
+  .post(
+    '/create/admin',
+    validateRequest(userValidation?.userValidationSchema),
+    userController.createUserAdmin,
+  )
+
   .post(
     '/create-user-verify-otp',
     validateRequest(resentOtpValidations.verifyOtpZodSchema),

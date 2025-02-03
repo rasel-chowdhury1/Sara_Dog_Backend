@@ -5,6 +5,9 @@ import validateRequest from '../../middleware/validateRequest';
 import auth from '../../middleware/auth';
 import { PetProfileController } from './PetProfile.controller';
 import { petProfileValidations } from './PetProfile.validation';
+import fileUpload from '../../middleware/fileUpload';
+import parseData from '../../middleware/parseData';
+const upload = fileUpload('./public/uploads/profile');
 
 const router = express.Router();
 
@@ -28,14 +31,15 @@ router.get('/:id', PetProfileController.getOneById);
 
 router.patch(
   '/:id',
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = petProfileValidations.updateValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return PetProfileController.updateById(req, res, next);
-  },
-  validateRequest(petProfileValidations.updateValidationSchema),
+  upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = petProfileValidations.updateValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return PetProfileController.updateById(req, res, next);
+  // },
+  // validateRequest(petProfileValidations.updateValidationSchema),
+  parseData(),
   PetProfileController.updateById,
 );
 
