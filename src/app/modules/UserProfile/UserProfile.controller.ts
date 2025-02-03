@@ -11,13 +11,18 @@ import { UserProfileService } from './UserProfile.service';
  */
 
 const addNew = catchAsync(async (req: Request, res: Response) => {
-  const UserProfileData = req.body;
-  const file = req.file as Express.Multer.File;
-  if (!file) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // const UserProfileData = req.body;
+  // const file = req.file as Express.Multer.File;
+  // if (!file) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // }
+
+  const UserProfileData = { ...req.body };
+  if (req?.file) {
+    UserProfileData.image = storeFile('profile', req?.file?.filename);
   }
 
-  const result = await UserProfileService.addNew(file, UserProfileData);
+  const result = await UserProfileService.addNew( UserProfileData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

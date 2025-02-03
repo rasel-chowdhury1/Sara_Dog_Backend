@@ -13,15 +13,17 @@ const router = express.Router();
 
 router.post(
   '/add',
-  // auth(USER_ROLE.ADMIN), // Authorization middleware
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = petProfileValidations.addValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return PetProfileController.addNew(req, res, next);
-  },
-  validateRequest(petProfileValidations.addValidationSchema),
+  upload.single('file'),
+  parseData(),
+  // // auth(USER_ROLE.ADMIN), // Authorization middleware
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = petProfileValidations.addValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return PetProfileController.addNew(req, res, next);
+  // },
+  // validateRequest(petProfileValidations.addValidationSchema),
   PetProfileController.addNew,
 );
 

@@ -11,12 +11,16 @@ import { storeFile } from '../../utils/fileHelper';
  */
 
 const addNew = catchAsync(async (req: Request, res: Response) => {
-  const UserProfileData = req.body;
-  const file = req.file as Express.Multer.File;
-  if (!file) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // const UserProfileData = req.body;
+  // const file = req.file as Express.Multer.File;
+  // if (!file) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // }
+  const PetProfileData = { ...req.body };
+  if (req?.file) {
+    PetProfileData.image = storeFile('profile', req?.file?.filename);
   }
-  const result = await PetProfileService.addNew(file, UserProfileData);
+  const result = await PetProfileService.addNew(PetProfileData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

@@ -11,15 +11,17 @@ const router = express.Router();
 
 router.post(
   '/add',
-  // auth(USER_ROLE.ADMIN), // Authorization middleware
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = userProfileValidations.addValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return UserProfileController.addNew(req, res, next);
-  },
-  validateRequest(userProfileValidations.addValidationSchema),
+  upload.single('file'),
+  // // auth(USER_ROLE.ADMIN), // Authorization middleware
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = userProfileValidations.addValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return UserProfileController.addNew(req, res, next);
+  // },
+  parseData(),
+  // validateRequest(userProfileValidations.addValidationSchema),
   UserProfileController.addNew,
 );
 

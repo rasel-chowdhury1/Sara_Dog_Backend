@@ -14,7 +14,7 @@ import { UserProfile } from './UserProfile.models';
  * Add new product(s) with sequential product IDs.
  */
 const addNew = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TUserProfile>,
 ): Promise<TUserProfile> => {
   const userData = await User.findById(data.userId);
@@ -29,8 +29,8 @@ const addNew = async (
   if (isExist) {
     throw new Error('User profile already exist');
   }
-  const ImageUrl = file.path.replace('public\\', '');
-  data.image = ImageUrl;
+  // const ImageUrl = file.path.replace('public\\', '');
+  // data.image = ImageUrl;
   const result = await UserProfile.create(data);
 
   // if (!result) {

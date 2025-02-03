@@ -15,7 +15,7 @@ import { PetProfile } from './PetProfile.models';
  * Add new product(s) with sequential product IDs.
  */
 const addNew = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TPetProfile>,
 ): Promise<TPetProfile | any> => {
   // Find the user by their ID
@@ -38,8 +38,8 @@ const addNew = async (
   data.address = userProfile.address;
   // Set the location from the UserProfile (including lastLocationChangeAt)
   // Process the image file and update the image URL in data
-  const ImageUrl = file.path.replace('public\\', '');
-  data.image = ImageUrl;
+  // const ImageUrl = file.path.replace('public\\', '');
+  // data.image = ImageUrl;
   // Create the new pet profile
   const result = await PetProfile.create(data);
 
