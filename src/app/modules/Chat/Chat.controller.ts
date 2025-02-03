@@ -4,14 +4,20 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { ChatService } from './Chat.service';
 import { PetProfile } from '../PetProfile/PetProfile.models';
+import { storeFile } from '../../utils/fileHelper';
 
 const addNewChat = catchAsync(async (req: Request, res: Response) => {
   console.log('req body -> ', req.body);
-  const UserProfileData = JSON.parse(req.body.data);
-  console.log({ UserProfileData });
-  const file = req?.file as Express.Multer.File;
-  console.log({ file });
-  const result = await ChatService.addNewChat(file, UserProfileData);
+  // const UserProfileData = JSON.parse(req.body.data);
+  // console.log({ UserProfileData });
+  // const file = req?.file as Express.Multer.File;
+  // console.log({ file });
+
+  const chatData = { ...req.body };
+  if (req?.file) {
+    chatData.groupProfilePicture = storeFile('chat', req?.file?.filename);
+  }
+  const result = await ChatService.addNewChat(chatData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -45,10 +51,16 @@ const leaveUserFromSpecificChatController = catchAsync(
 );
 
 const updateChatById = catchAsync(async (req: Request, res: Response) => {
-  const UserProfileData = req.body;
-  const file = req?.file as Express.Multer.File;
   const { id } = req.params;
-  const result = await ChatService.updateChatById(id, file, UserProfileData);
+  // const UserProfileData = req.body;
+  // const file = req?.file as Express.Multer.File;
+
+  const chatUpdateData = { ...req.body };
+  if (req?.file) {
+    chatUpdateData.groupProfilePicture = storeFile('profile', req?.file?.filename);
+  }
+  
+  const result = await ChatService.updateChatById(id, chatUpdateData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

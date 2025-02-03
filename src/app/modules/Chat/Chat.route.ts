@@ -1,11 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import auth from '../../middleware/auth';
-import { USER_ROLE } from '../user/user.constants';
-import { ChatController } from './Chat.controller';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
-const upload = fileUpload('../../../public/uploads/profile');
+import { USER_ROLE } from '../user/user.constants';
+import { ChatController } from './Chat.controller';
+const upload = fileUpload('./public/uploads/profile');
 
 const router = express.Router();
 

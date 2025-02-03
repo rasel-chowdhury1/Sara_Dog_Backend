@@ -1,13 +1,14 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
+// import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import validateRequest from '../../middleware/validateRequest';
-import { USER_ROLE } from '../user/user.constants';
-import auth from '../../middleware/auth';
-const upload = fileUpload('../../../public/uploads/profile');
+// import { USER_ROLE } from '../user/user.constants';
+// import auth from '../../middleware/auth';
+
 
 import { shelterValidations } from './Shelter.validation';
 import { ShelterController } from './Shelter.controller';
 import fileUpload from '../../middleware/fileUpload';
+const upload = fileUpload('./public/uploads/profile');
 import parseData from '../../middleware/parseData';
 
 const router = express.Router();
@@ -24,7 +25,7 @@ router.post(
   //   );
   //   return ShelterController.addNew(req, res, next);
   // },
-  validateRequest(shelterValidations.addValidationSchema),
+  // validateRequest(shelterValidations.addValidationSchema),
   ShelterController.addNew,
 );
 

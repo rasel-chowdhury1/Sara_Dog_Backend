@@ -1,11 +1,8 @@
-import { NextFunction, Request, Response, Router } from 'express';
-import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
-import validateRequest from '../../middleware/validateRequest';
-import { MessageController } from './Message.controller';
-import { MessageValidations } from './Message.validation';
+import { Router } from 'express';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
-const upload = fileUpload('../../../public/uploads/profile');
+import { MessageController } from './Message.controller';
+const upload = fileUpload('./public/uploads/profile');
 
 const router = Router();
 
@@ -29,7 +26,6 @@ router.post(
 );
 
 router.get('/full-chat/:chatId', MessageController.GetChatMessages);
-
 
 router.patch('/read', MessageController.ReadAllMessages);
 

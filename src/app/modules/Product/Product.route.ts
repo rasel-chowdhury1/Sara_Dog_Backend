@@ -1,13 +1,12 @@
-import express, { NextFunction, Request, Response } from 'express';
-import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
-import validateRequest from '../../middleware/validateRequest';
-import { USER_ROLE } from '../user/user.constants';
+import express from 'express';
 import auth from '../../middleware/auth';
-import { productValidations } from './Product.validation';
-import { ProductController } from './Product.controller';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
-const upload = fileUpload('../../../public/uploads/profile');
+import validateRequest from '../../middleware/validateRequest';
+import { USER_ROLE } from '../user/user.constants';
+import { ProductController } from './Product.controller';
+import { productValidations } from './Product.validation';
+const upload = fileUpload('./public/uploads/profile');
 const router = express.Router();
 
 router.post(
@@ -22,7 +21,7 @@ router.post(
   //   );
   //   return ProductController.addNewProduct(req, res, next);
   // },
-  validateRequest(productValidations.addProductValidationSchema),
+  // validateRequest(productValidations.addProductValidationSchema),
   ProductController.addNewProduct,
 );
 
@@ -42,7 +41,7 @@ router.patch(
   // },
   upload.single('file'),
   parseData(),
-  validateRequest(productValidations.updateProductValidationSchema),
+  // validateRequest(productValidations.updateProductValidationSchema),
   ProductController.updateProduct,
 );
 

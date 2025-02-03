@@ -4,7 +4,7 @@ import { TChat } from './Chat.interface';
 import { Chat } from './Chat.models';
 
 const addNewChat = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: TChat,
 ): Promise<TChat> => {
   console.log(data);
@@ -27,12 +27,12 @@ const addNewChat = async (
       throw new Error('Group Name is required');
     }
 
-    if (!file) {
-      throw new Error('Group Profile Picture is required');
-    }
-    // Assign the group profile picture URL
-    const imageUrl = file.path.replace('public\\', '');
-    data.groupProfilePicture = imageUrl;
+    // if (!file) {
+    //   throw new Error('Group Profile Picture is required');
+    // }
+    // // Assign the group profile picture URL
+    // const imageUrl = file.path.replace('public\\', '');
+    // data.groupProfilePicture = imageUrl;
 
     // if (!data?.groupBio) {
     //   throw new Error('Group Bio is required');
@@ -178,19 +178,19 @@ const updateUnreadCounts = async (
 
 const updateChatById = async (
   chatId: string,
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: TChat,
 ): Promise<TChat | null> => {
   const isChatExist = await Chat.findById(chatId);
   if (!isChatExist) {
     throw new Error('Chat not found');
   }
-  if (data?.isGroupChat === true) {
-    if (file) {
-      const ImageUrl = file.path.replace('public\\', '');
-      data.groupProfilePicture = ImageUrl;
-    }
-  }
+  // if (data?.isGroupChat === true) {
+  //   if (file) {
+  //     const ImageUrl = file.path.replace('public\\', '');
+  //     data.groupProfilePicture = ImageUrl;
+  //   }
+  // }
 
   const result = await Chat.findByIdAndUpdate(chatId, data, {
     new: true,

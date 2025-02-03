@@ -11,11 +11,11 @@ import { Shelter } from './Shelter.models';
  * Add new product(s) with sequential product IDs.
  */
 const addNew = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TShelter>,
 ): Promise<TShelter> => {
-  const ImageUrl = file.path.replace('public\\', '');
-  data.image = ImageUrl;
+  // const ImageUrl = file.path.replace('public\\', '');
+  // data.image = ImageUrl;
   const result = await Shelter.create(data);
 
   // if (!result) {

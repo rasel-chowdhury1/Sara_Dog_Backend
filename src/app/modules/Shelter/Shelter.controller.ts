@@ -11,12 +11,18 @@ import { storeFile } from '../../utils/fileHelper';
  */
 
 const addNew = catchAsync(async (req: Request, res: Response) => {
-  const ShelterData = req.body;
-  const file = req.file as Express.Multer.File;
-  if (!file) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // const ShelterData = req.body;
+  // const file = req.file as Express.Multer.File;
+  // if (!file) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // }
+
+  const ShelterData = { ...req.body };
+  if (req?.file) {
+    ShelterData.image = storeFile('profile', req?.file?.filename);
   }
-  const result = await ShelterService.addNew(file, ShelterData);
+
+  const result = await ShelterService.addNew( ShelterData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -66,7 +72,7 @@ const updateById = catchAsync(async (req: Request, res: Response) => {
 
   const data = { ...req.body };
   if (req?.file) {
-    data.image = storeFile('Shelter', req?.file?.filename);
+    data.image = storeFile('profile', req?.file?.filename);
   }
 
   const result = await ShelterService.updateById(id,  data);
