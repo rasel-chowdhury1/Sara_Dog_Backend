@@ -8,6 +8,8 @@ import sendResponse from '../../utils/sendResponse';
 
 const createPayment = catchAsync(async (req: Request, res: Response) => {
   const paymentData = req.body;
+  console.log("====== payment data ==== >>> ", paymentData)
+  
   const result = await PaymentService.createPayment(paymentData);
   sendResponse(res, {
     statusCode: 201,

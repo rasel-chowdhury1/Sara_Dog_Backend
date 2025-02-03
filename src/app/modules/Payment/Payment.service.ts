@@ -49,11 +49,15 @@ function makeHttpsRequest(
 }
 
 const processPayment = async (id: string): Promise<TPayment> => {
+  console.log("====== payment id ==== ", id)
   const paymentRecord = await Payment.findById(id);
+
+  console.log("========= paymnent record ====== >",paymentRecord)
 
   if (!paymentRecord) {
     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
   }
+  
   if (paymentRecord.status !== 'pending') {
     throw new AppError(httpStatus.BAD_REQUEST, 'Payment already processed');
   }
@@ -101,11 +105,14 @@ const processPayment = async (id: string): Promise<TPayment> => {
 const createPayment = async (data: TPayment): Promise<TPayment | any> => {
   // console.log(data);
   const user = await User.findById(data.userId);
+
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
   const result1 = await Payment.create(data);
+
+  console.log("====== payment result data ===== >>> ", result1)
   if (!result1) {
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
   }
