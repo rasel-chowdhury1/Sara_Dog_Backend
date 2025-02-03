@@ -3,12 +3,17 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { MessageService } from './Message.service';
+import { storeFile } from '../../utils/fileHelper';
 
 const SendNewMessage = catchAsync(async (req: Request, res: Response) => {
-  const Data = req.body;
-  const file = req?.file as Express.Multer.File;
-  console.log(Data);
-  const result = await MessageService.SendNewMessage(file, Data);
+  // const Data = req.body;
+  // const file = req?.file as Express.Multer.File;
+  // console.log(Data);
+  const data = { ...req.body };
+  if (req?.file) {
+    data.image = storeFile('message', req?.file?.filename);
+  }
+  const result = await MessageService.SendNewMessage(data);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

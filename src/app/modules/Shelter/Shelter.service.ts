@@ -52,13 +52,13 @@ const getOneById = async (id: string): Promise<TShelter | null> => {
  */
 const updateById = async (
   id: string,
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TShelter>,
 ): Promise<TShelter | null> => {
-  if (file) {
-    const ImageUrl = file.path.replace('public\\', '');
-    data.image = ImageUrl;
-  }
+  // if (file) {
+  //   const ImageUrl = file.path.replace('public\\', '');
+  //   data.image = ImageUrl;
+  // }
   const previousImage = await Shelter.findById(id);
 
   const product = await Shelter.findByIdAndUpdate(id, data, {

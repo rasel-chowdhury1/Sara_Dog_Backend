@@ -3,22 +3,27 @@ import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import validateRequest from '../../middleware/validateRequest';
 import { USER_ROLE } from '../user/user.constants';
 import auth from '../../middleware/auth';
+const upload = fileUpload('../../../public/uploads/profile');
 
 import { shelterValidations } from './Shelter.validation';
 import { ShelterController } from './Shelter.controller';
+import fileUpload from '../../middleware/fileUpload';
+import parseData from '../../middleware/parseData';
 
 const router = express.Router();
 
 router.post(
   '/add',
+  upload.single('file'),
+  parseData(),
   // auth(USER_ROLE.ADMIN), // Authorization middleware
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = shelterValidations.addValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return ShelterController.addNew(req, res, next);
-  },
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = shelterValidations.addValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return ShelterController.addNew(req, res, next);
+  // },
   validateRequest(shelterValidations.addValidationSchema),
   ShelterController.addNew,
 );
@@ -29,14 +34,16 @@ router.get('/:id', ShelterController.getOneById);
 
 router.patch(
   '/:id',
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = shelterValidations.updateValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return ShelterController.updateById(req, res, next);
-  },
-  validateRequest(shelterValidations.updateValidationSchema),
+  upload.single('file'),
+  parseData(),
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = shelterValidations.updateValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return ShelterController.updateById(req, res, next);
+  // },
+  // validateRequest(shelterValidations.updateValidationSchema),
   ShelterController.updateById,
 );
 

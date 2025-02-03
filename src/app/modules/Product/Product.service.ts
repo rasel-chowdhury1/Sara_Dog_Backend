@@ -10,11 +10,11 @@ import { Product } from './Product.models';
  * Add new product(s) with sequential product IDs.
  */
 const addNewProduct = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TProduct>,
 ): Promise<TProduct> => {
-  const ImageUrl = file.path.replace('public\\', '');
-  data.image = ImageUrl;
+  // const ImageUrl = file.path.replace('public\\', '');
+  // data.image = ImageUrl;
   const result = await Product.create(data);
 
   // if (!result) {
@@ -52,13 +52,13 @@ const getProductById = async (id: string): Promise<TProduct | null> => {
  */
 const updateProduct = async (
   id: string,
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   data: Partial<TProduct>,
 ): Promise<TProduct | null> => {
-  if (file) {
-    const ImageUrl = file.path.replace('public\\', '');
-    data.image = ImageUrl;
-  }
+  // if (file) {
+  //   const ImageUrl = file.path.replace('public\\', '');
+  //   data.image = ImageUrl;
+  // }
   const previousImage = await Product.findById(id);
 
   const product = await Product.findByIdAndUpdate(id, data, {
@@ -70,8 +70,8 @@ const updateProduct = async (
   //   unlink(`public/${previousImage?.image}`);
   // }
 
-  if (file) {
-  }
+  // if (file) {
+  // }
   return product;
 };
 

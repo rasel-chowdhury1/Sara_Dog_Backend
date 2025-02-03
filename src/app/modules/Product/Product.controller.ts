@@ -4,18 +4,23 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import AppError from '../../error/AppError';
 import { ProductService } from './Product.service';
+import { storeFile } from '../../utils/fileHelper';
 
 /**
  * Create a new product.
  */
 
 const addNewProduct = catchAsync(async (req: Request, res: Response) => {
-  const productData = req.body;
-  const file = req.file as Express.Multer.File;
-  if (!file) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // const productData = req.body;
+  // const file = req.file as Express.Multer.File;
+  // if (!file) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+  // }
+  const productData = { ...req.body };
+  if (req?.file) {
+    productData.image = storeFile('product', req?.file?.filename);
   }
-  const result = await ProductService.addNewProduct(file, productData);
+  const result = await ProductService.addNewProduct( productData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -60,10 +65,15 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
  */
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
-  const file = req.file as Express.Multer.File;
+  // const data = req.body;
+  // const file = req.file as Express.Multer.File;
 
-  const result = await ProductService.updateProduct(id, file, data);
+  const data = { ...req.body };
+  if (req?.file) {
+    data.image = storeFile('profile', req?.file?.filename);
+  }
+
+  const result = await ProductService.updateProduct(id, data);
   if (!result) throw new Error('Product not found');
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -3,23 +3,28 @@ import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
 import { ChatController } from './Chat.controller';
+import fileUpload from '../../middleware/fileUpload';
+import parseData from '../../middleware/parseData';
+const upload = fileUpload('../../../public/uploads/profile');
 
 const router = express.Router();
 
 // Add a new chat
 router.post(
   '/add',
+  upload.single('file'),
+  parseData(),
   // auth(USER_ROLE.ADMIN), // Authorization middleware
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    console.log('before data add new chat -> ', req.body);
-    console.log('before data add new file -> ', req.file);
-    // req.body = productValidations.addProductValidationSchema.parse(
-    //   JSON.parse(req.body.data),
-    // );
-    console.log(JSON.parse(req.body.data));
-    return ChatController.addNewChat(req, res, next);
-  },
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   console.log('before data add new chat -> ', req.body);
+  //   console.log('before data add new file -> ', req.file);
+  //   // req.body = productValidations.addProductValidationSchema.parse(
+  //   //   JSON.parse(req.body.data),
+  //   // );
+  //   console.log(JSON.parse(req.body.data));
+  //   return ChatController.addNewChat(req, res, next);
+  // },
   // validateRequest(productValidations.addProductValidationSchema),
   ChatController.addNewChat,
 );

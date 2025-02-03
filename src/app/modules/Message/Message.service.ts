@@ -5,13 +5,13 @@ import { TMessage } from './Message.interface';
 import { Message } from './Message.models';
 
 const SendNewMessage = async (
-  file: Express.Multer.File,
+  // file: Express.Multer.File,
   payload: TMessage,
 ): Promise<TMessage> => {
-  if (file) {
-    const ImageUrl = file.path.replace('public\\', '');
-    payload.image = ImageUrl;
-  }
+  // if (file) {
+  //   const ImageUrl = file.path.replace('public\\', '');
+  //   payload.image = ImageUrl;
+  // }
 
   console.log(payload);
 

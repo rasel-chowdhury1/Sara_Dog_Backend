@@ -5,19 +5,23 @@ import { USER_ROLE } from '../user/user.constants';
 import auth from '../../middleware/auth';
 import { productValidations } from './Product.validation';
 import { ProductController } from './Product.controller';
-
+import fileUpload from '../../middleware/fileUpload';
+import parseData from '../../middleware/parseData';
+const upload = fileUpload('../../../public/uploads/profile');
 const router = express.Router();
 
 router.post(
   '/add',
   auth(USER_ROLE.ADMIN), // Authorization middleware
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = productValidations.addProductValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return ProductController.addNewProduct(req, res, next);
-  },
+  upload.single('file'),
+  parseData(),
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = productValidations.addProductValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return ProductController.addNewProduct(req, res, next);
+  // },
   validateRequest(productValidations.addProductValidationSchema),
   ProductController.addNewProduct,
 );
@@ -29,13 +33,15 @@ router.get('/:id', ProductController.getProductById);
 router.patch(
   '/:id',
   auth(USER_ROLE.ADMIN),
-  FileUploadHelper.upload.single('file'), // Single file uploads
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = productValidations.updateProductValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return ProductController.updateProduct(req, res, next);
-  },
+  // FileUploadHelper.upload.single('file'), // Single file uploads
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   req.body = productValidations.updateProductValidationSchema.parse(
+  //     JSON.parse(req.body.data),
+  //   );
+  //   return ProductController.updateProduct(req, res, next);
+  // },
+  upload.single('file'),
+  parseData(),
   validateRequest(productValidations.updateProductValidationSchema),
   ProductController.updateProduct,
 );
