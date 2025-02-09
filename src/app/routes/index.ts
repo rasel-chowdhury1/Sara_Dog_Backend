@@ -15,6 +15,7 @@ import { ShelterRoutes } from '../modules/Shelter/Shelter.route';
 import { userRoutes } from '../modules/user/user.route';
 import { UserProfileRoutes } from '../modules/UserProfile/UserProfile.route';
 import { supportRoutes } from '../modules/Support/support.route';
+import { AdminSettingsRouter } from '../modules/AdminSettings/AdminSettings.route';
 
 // import { ProductsRoutes } from '../modules/Product/Product.route';
 // import { ShelterRoutes } from '../modules/Shelter/Shelter.route';
@@ -86,6 +87,10 @@ const moduleRoutes = [
   {
     path: '/contactUs',
     route: supportRoutes,
+  },
+  {
+    path: '/admin',
+    route: AdminSettingsRouter
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

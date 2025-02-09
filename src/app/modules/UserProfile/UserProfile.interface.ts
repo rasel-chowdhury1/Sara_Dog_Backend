@@ -5,7 +5,7 @@ export type TLocation = {
   coordinates: [number, number]; // [longitude, latitude]
 };
 
-export type TUserProfile = {
+export type TUserProfile =  {
   userId: Types.ObjectId;
   name: string;
   image?: string;
