@@ -1,13 +1,12 @@
 node_modules
 logs/
 **/logs/
-# .env
+.env
 .vercel
 nn.ts
 
 public/
 
-.env
 
 .vercel
 dist
