@@ -7,11 +7,13 @@ import { Server } from 'socket.io';
 import getUserDetailsFromToken from './app/helpers/getUserDetailsFromToken';
 import { Chat } from './app/modules/Chat/Chat.models';
 import { Message } from './app/modules/Message/Message.models';
-import { User } from './app/modules/user/user.models';
 import { PetProfile } from './app/modules/PetProfile/PetProfile.models';
+import { User } from './app/modules/user/user.models';
+import { UserProfile } from './app/modules/UserProfile/UserProfile.models';
+import AppError from './app/error/AppError';
+import { error } from 'console';
 
 async function getChatById(chatId: string) {
-
   try {
     const chat = await Chat.findById(chatId).populate('users').exec();
     if (!chat) {
@@ -22,7 +24,6 @@ async function getChatById(chatId: string) {
     console.error('Error fetching chat:', error);
     throw error; // Rethrow to handle it in the calling function
   }
-  
 }
 
 const initializeSocketIO = (server: HttpServer) => {
@@ -46,7 +47,9 @@ const initializeSocketIO = (server: HttpServer) => {
 
       // console.log("socket -> ", socket)
 
-      const token = socket.handshake.auth.token || socket.handshake?.headers?.token as string;
+      const token =
+        socket.handshake.auth.token ||
+        (socket.handshake?.headers?.token as string);
 
       // console.log('konojhoi', socket.handshake);
 
@@ -65,13 +68,18 @@ const initializeSocketIO = (server: HttpServer) => {
       // //----------------------check Token and return user details-------------------------//
       const user: any = await getUserDetailsFromToken(token);
 
+      const userProfile: any = await PetProfile.findOne({userId: user._id.toString()}).select("name")
+
+      console.log("======== user ==== ", user)
+      console.log("======== user profile ==== ", userProfile)
+
       // console.log({ user });
 
       // console.log({ user });
       if (!user) {
         socket.emit('io-error', { success: false, message: 'invalid Token' });
-        socket.disconnect()
-        return
+        socket.disconnect();
+        return;
       }
 
       // connectedSocket.set(user._id.toString(), socket);
@@ -103,66 +111,129 @@ const initializeSocketIO = (server: HttpServer) => {
           // });
           io.emit('online-users-updated', onlineUsers);
 
-          console.log('Online Users', onlineUsers);
+          // console.log('Online Users', onlineUsers);
         });
 
-        socket.on('send-new-message', async (message) => {
-          console.log('new message ====>', { message });
+        socket.on('send-new-message', async (message, callback) => {
+          console.log('===== new message ====>', { message });
 
           try {
             // Assuming `getChatById` fetches the chat object including the users array
             const chat = await getChatById(message.chat);
 
-            // console.log({ chat });
+            console.log("===== chat messag ==>>>>>> ",{ chat });
             // console.log(chat.users);
             let newMessage: any;
             let userData;
-            if (chat) {
-              newMessage = await Message.create(message);
-              console.log({ newMessage });
 
-              if(message?.sender === null){
+            if (chat.blockedUsers.includes(user._id.toString())) {
+              // console.log('user is blocked ======>>>>>>> ');
 
-              }
-              else{
-               userData = await User.findById(message?.sender).select('image fullName' );
-               await Chat.findByIdAndUpdate(message.chat, {
-                 lastMessage: newMessage._id,
-               });
-              }
-              console.log({userData})
+              socket.emit(
+                'io-error',
+                "You have been blocked. You can't send messages.",
+              );
+              callback({
+                success: false,
+                message: "You have been blocked. You can't send messages.",
+              });
+              return 
+
+              // console.log("after excution ===>>>>>>>> ")
             }
+
+              if (chat) {
+                newMessage = await Message.create(message);
+                console.log('====== created message ==>>>>> ', { newMessage });
+                
+
+                if (message?.sender === null) {
+                } else {
+                  let receiver;
+
+                  if(chat.users.length === 2){
+
+                    if (chat.users[0]._id.toString() === user._id.toString()){
+                      receiver = chat.users[1]._id.toString();
+                    }
+                    else{
+                      receiver = chat.users[0]._id.toString();
+                    }
+
+
+                  }
+                  let deletedFor = chat.deletedFor;
+                  if(receiver){
+                    deletedFor = chat.deletedFor.filter(
+                      (id) => id.toString() !== receiver,
+                    );
+                  }
+                  userData = await User.findById(message?.sender).select(
+                    'image fullName',
+                  );
+                  await Chat.findByIdAndUpdate(message.chat, {
+                    lastMessage: newMessage._id,
+                    deletedFor
+                  });
+                }
+                // console.log({ userData });
+              }
             // console.log(message?.chat);
             const chatId = message?.chat;
-            console.log({...message, userData});
-      
-            const petProfileData = await PetProfile.findOne({ userId: message?.sender});
+            // console.log({ ...message, userData });
 
-            console.log({petProfileData})
+            const petProfileData = await PetProfile.findOne({
+              userId: message?.sender,
+            });
+
+            console.log({ petProfileData });
 
             message.name = petProfileData?.name;
             message.image = petProfileData?.image;
 
-            console.log({message})
-            
+            console.log({ message });
+
             // console.log('new-message-received::', message.chat);
             // /socket.emit(`new-message-received::${message.chat}`, newMessage);
+            callback({
+              success: true,
+              message: "Your message sent successfully.",
+            });
             socket
               .to(chatId)
               .emit(`new-message-received::${message?.chat}`, message);
             socket.emit(`new-message-received::${message?.chat}`, message);
+
           } catch (error) {
             console.error('Error fetching chat details:', error);
+            
           }
         });
 
+        socket.on("isChatBlocked", (data, callback) => {
+           const message = {
+             success: true,
+             message: 'chat is blocked...',
+             data: data.chatId,
+           };
+            callback(message);
+
+            console.log(`needRefresh::${data.userId}`);
+            console.log("===message ====>>>>>>", message);
+            io.emit(`needRefresh::${data.userId}`, {success: true, message: `${data.userId} need refresh.`})
+            io.emit(`isChatBlocked::${data.chatId}`, message);
+        })
+
+
+
+
         // Leave a chat room
         socket.on('leave', (chatId, callback) => {
-          console.log(`${socket.id} left room ${chatId}`);
+          // console.log(`${socket.id} left room ${chatId}`);
 
           socket
             .to(chatId)
-            .emit(`leave::${chatId}`, `${user.name} leave from  this chat...`);
+            .emit(`leave::${chatId}`, `${user.name} left from  this chat...`);
           socket.leave(chatId);
         });
 
@@ -175,12 +246,40 @@ const initializeSocketIO = (server: HttpServer) => {
           });
         });
 
-        socket.on('typing', ({ chat, senderId, senderName }) => {
-          chat.users.forEach((user: any) => {
-            if (user._id !== senderId) {
-              io.to(user._id).emit('typing', { chat, senderName });
-            }
-          });
+        socket.on('typing', (data, callback) => {
+          const senderId = user._id.toString();
+          let message = `${userProfile?.name} is `;
+          // console.log('==== sender {id, name } of user === ', {
+          //   senderId,
+          //   message,
+          //   data,
+          // });
+
+          if (data.status === true) {
+            message += 'typing...';
+            data.users.forEach((user: any) => {
+              if (user._id !== senderId) {
+                io.emit(`typing::${data.chatId.toString()}`, {
+                  status: true,
+                  writeId: senderId,
+                  message,
+                });
+              }
+            });
+            callback({ success: true, writeId: senderId, message });
+          } else if (data.status === false) {
+            // message += 'stop typing...';
+            data.users.forEach((user: any) => {
+              if (user._id !== senderId) {
+                io.emit(`typing::${data.chatId.toString()}`, {
+                  status: true,
+                  writeId: senderId,
+                  message: '',
+                });
+              }
+            });
+            callback({ success: false, writeId: senderId, message });
+          }
         });
 
         socket.on('logout', (userId) => {

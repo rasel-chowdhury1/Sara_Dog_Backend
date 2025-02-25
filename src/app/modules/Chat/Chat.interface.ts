@@ -10,6 +10,8 @@ export type TChat = {
   groupBio?: string; // Bio or description for the g roup chat
   groupAdmins: Types.ObjectId[]; // Admins of the group chat
   unreadCountes: {}; // Dynamic unread counts for users
+  blockedUsers: Types.ObjectId[];
+  deletedFor: Types.ObjectId[];
   createdAt: Date; // Timestamp for creation
   updatedAt: Date; // Timestamp for updates
 };

@@ -22,9 +22,9 @@ const messageSchema = new Schema<TMessage, MessageModel>(
       type: String,
       default: null, // Default to null if no text is provided
     },
-    image: {
-      type: String,
-      default: null, // Default to null if no image is provided
+    images: {
+      type: [String],
+      default: [], // Default to null if no image is provided
     },
     // document: {
     //   type: String,

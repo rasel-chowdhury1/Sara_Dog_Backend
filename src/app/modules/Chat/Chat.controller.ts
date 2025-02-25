@@ -46,7 +46,7 @@ const leaveUserFromSpecificChatController = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
-      message: `${PetProfileData?.name} has leave the chat...`,
+      message: `${PetProfileData?.name} has left the chat...`,
       data: result,
     });
   },
@@ -78,6 +78,8 @@ const getUserChats = async (
 ) => {
   try {
     const chats = await ChatService.getUserChats(req.params.userId);
+
+    // console.log("==== chats list =====>>>>>>> ", chats)
     res.status(200).json({
       success: true,
       message: 'Chats retrieved successfully!',
@@ -124,6 +126,54 @@ const updateUnreadCounts = async (
   }
 };
 
+
+// Block a user
+const blockUser = catchAsync(async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const {blockUserId} = req.body;
+  const userId = req.user.userId;
+
+  const result = await ChatService.blockUser(chatId, userId, blockUserId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User blocked successfully!',
+    data: result,
+  });
+});
+
+// Unblock a user
+const unblockUser = catchAsync(async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const { blockUserId } = req.body;
+  const userId = req.user.userId;
+
+  const result = await ChatService.unblockUser(chatId, userId, blockUserId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User unblocked successfully!',
+    data: result,
+  });
+});
+
+// Delete a chat for a user (soft delete)
+const deleteChatForUser = catchAsync(async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const {userId} = req.user;
+
+  const result = await ChatService.deleteChatForUser(chatId, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Chat deleted successfully!',
+    data: result,
+  });
+});
+
 const deleteChat = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const chat = await ChatService.deleteChat(req.params.id);
@@ -145,4 +195,7 @@ export const ChatController = {
   updateUnreadCounts,
   deleteChat,
   updateChatById,
+  blockUser,
+  unblockUser,
+  deleteChatForUser,
 };

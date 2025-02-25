@@ -46,6 +46,14 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: true,
     },
+    isHero: {
+      type: Boolean,
+      default: false
+    },
+    isSupported: {
+      type: Boolean,
+      default: false
+    },
     location: {
       type: String,
       default: '',

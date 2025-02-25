@@ -8,6 +8,12 @@ const router = Router();
 router
   .get('/settings', AdminSettingsController.getSettings)
 
-  .patch('/settings', AdminSettingsController.updateSettings);
+  .patch(
+    '/settings',
+    auth(
+      USER_ROLE.ADMIN
+    ),
+    AdminSettingsController.updateSettings
+  );
 
 export const AdminSettingsRouter = router;

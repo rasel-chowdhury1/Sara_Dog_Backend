@@ -13,10 +13,6 @@ class AggregationQueryBuilder<T> {
   }
 
 
-  querydata(){
-    return this.query;
-  }
-
   /**
    * Perform a geo search using `$geoNear`
    */
@@ -46,6 +42,7 @@ class AggregationQueryBuilder<T> {
     return this;
   }
 
+
   filter(filterableFields: string[]) {
     if (this.isAggregate) {
       (this.modelQuery as Aggregate<T[]>)
@@ -53,8 +50,11 @@ class AggregationQueryBuilder<T> {
         .push({ $match: this.query });
     } else {
       const queryObj = { ...this.query };
+
+      console.log("==== before delete queryObj data === ", queryObj);
       const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
       excludeFields.forEach((el) => delete queryObj[el]);
+      console.log('==== after delete queryObj data === ', queryObj);
 
       this.modelQuery = (this.modelQuery as Query<T[], T>).find(
         queryObj as FilterQuery<T>,
@@ -105,16 +105,6 @@ class AggregationQueryBuilder<T> {
     return this;
   }
 
-//   sort() {
-//     if (this.isAggregate) {
-//       (this.modelQuery as Aggregate<T[]>)
-//         .pipeline()
-//         .push({ $sort: { createdAt: -1 } });
-//     } else {
-//       this.modelQuery = (this.modelQuery as Query<T[], T>).sort('-createdAt');
-//     }
-//     return this;
-//   }
 
   sort() {
     if (this.isAggregate) return this; // Sorting is done differently in aggregation
@@ -125,16 +115,13 @@ class AggregationQueryBuilder<T> {
     return this;
   }
 
-  paginate(limit = 10, page = 1) {
-    if (this.isAggregate) {
-      (this.modelQuery as Aggregate<T[]>)
-        .pipeline()
-        .push({ $skip: (page - 1) * limit }, { $limit: limit });
-    } else {
-      this.modelQuery = (this.modelQuery as Query<T[], T>)
-        .skip((page - 1) * limit)
-        .limit(limit);
-    }
+  paginate() {
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+
     return this;
   }
 

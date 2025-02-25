@@ -17,16 +17,21 @@ const otpSendEmail = async ({
   await sendEmail(
     sentTo,
     subject,
-    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-       <h1>Hello dear, ${name}</h1>
-      <h2 style="color: #4CAF50;">Your One Time OTP</h2>
-      <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
-        <p style="font-size: 16px;">Your OTP is: <strong>${otp}</strong></p>
-        <p style="font-size: 14px; color: #666;">This OTP is valid until: ${expiredAt.toLocaleString()}</p>
+    `
+      <div style="background-color: #ffffff; color:#FAFAFA; font-family: Arial, sans-serif; max-width: 600px; margin: auto;       padding: 20px; border: 1px solid #F97316; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="https://i.ibb.co.com/kMZDrfZ/logo.png" alt="Sara sns woof" style="max-width: 100%; height: auto;" />
+        </div>
+
+        <p style="font-size: 28px; font-weight: 600;  color: #F97316; text-align: center;" >Welcome to the Woof Spot pack!</p>
+
+        <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px; margin-top: 12px;">
+           <p style="color: #F97316; text-align: center; font-size: 20px; font-weight: 500;">Your OTP: <strong>${otp}</strong></p>
+           <p style="font-size: 14px; color: #666; margin-top: 4px;">This OTP is valid until: ${expiredAt.toLocaleString()}</p>
+        </div>
       </div>
-    </div>`,
+    `,
   );
 };
-
 
 export { otpSendEmail };

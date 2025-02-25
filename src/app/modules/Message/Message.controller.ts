@@ -22,6 +22,35 @@ const SendNewMessage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+const uploadImageForSendMessage = catchAsync(async (req: Request, res: Response) =>{
+
+  console.log("===== req files ==== ", req.file)
+  let image;
+  if(req.file){
+
+    image =  await storeFile('message', req?.file?.filename);
+
+    console.log("===== image =====>>>> ",image)
+
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: 'Image upload successfully!',
+      data: image,
+    });
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.BAD_REQUEST,
+    success: false,
+    message: 'Something went wrong..!!!',
+    data: image,
+  });
+
+  
+})
+
 const GetChatMessages = async (
   req: Request,
   res: Response,
@@ -61,4 +90,5 @@ export const MessageController = {
   SendNewMessage,
   GetChatMessages,
   ReadAllMessages,
+  uploadImageForSendMessage,
 };

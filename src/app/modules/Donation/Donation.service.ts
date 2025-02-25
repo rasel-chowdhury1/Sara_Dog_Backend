@@ -28,8 +28,13 @@ const getAll = async (query: Record<string, unknown>) => {
     .sort()
     .paginate()
     .fields();
+
+
   const meta = await donationQuery.countTotal();
-  const result = await donationQuery.modelQuery;
+  const result = await donationQuery.modelQuery.populate(
+    'userId',
+    'isSupported isHero',
+  );;
   return { meta, result };
 };
 

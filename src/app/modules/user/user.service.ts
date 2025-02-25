@@ -170,6 +170,18 @@ const updateUser = async (id: string, payload: Partial<TUser>) => {
   return user;
 };
 
+const updateUserBadgeByAdmin = async (id: string, payload: Partial<TUser>) => {
+  const { role, email, ...rest } = payload;
+
+  const user = await User.findByIdAndUpdate(id, rest, { new: true });
+
+  if (!user) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User updating failed');
+  }
+
+  return user;
+};
+
 // ............................rest
 
 const getAllUserQuery = async (query: Record<string, unknown>) => {
@@ -298,6 +310,7 @@ export const userService = {
   getUserById,
   getUserByEmail,
   updateUser,
+  updateUserBadgeByAdmin,
   deleteMyAccount,
   blockedUser,
   getAllUserQuery,

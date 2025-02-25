@@ -59,9 +59,18 @@ router.patch(
   },
 );
 
+// Block a user
+router.patch('/:chatId/block', auth(USER_ROLE.USER, USER_ROLE.ADMIN), ChatController.blockUser);
+
+// Unblock a user
+router.patch('/:chatId/unblock', auth(USER_ROLE.USER, USER_ROLE.ADMIN), ChatController.unblockUser);
+
+// Delete chat for a user (soft delete)
+router.delete('/:chatId/delete', auth(USER_ROLE.USER, USER_ROLE.ADMIN), ChatController.deleteChatForUser);
+
 // Delete a chat
-router.delete('/:id', (req: Request, res: Response, next: NextFunction) => {
-  return ChatController.deleteChat(req, res, next);
-});
+// router.delete('/:id', (req: Request, res: Response, next: NextFunction) => {
+//   return ChatController.deleteChat(req, res, next);
+// });
 
 export const ChatRoutes = router;

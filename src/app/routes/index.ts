@@ -16,6 +16,7 @@ import { userRoutes } from '../modules/user/user.route';
 import { UserProfileRoutes } from '../modules/UserProfile/UserProfile.route';
 import { supportRoutes } from '../modules/Support/support.route';
 import { AdminSettingsRouter } from '../modules/AdminSettings/AdminSettings.route';
+import { blockedUserRoutes } from '../modules/BlockedUser/BlockedUser.route';
 
 // import { ProductsRoutes } from '../modules/Product/Product.route';
 // import { ShelterRoutes } from '../modules/Shelter/Shelter.route';
@@ -91,6 +92,10 @@ const moduleRoutes = [
   {
     path: '/admin',
     route: AdminSettingsRouter
+  },
+  {
+    path: '/blockedUser',
+    route: blockedUserRoutes
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

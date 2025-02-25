@@ -70,7 +70,12 @@ const getAll = async (query: Record<string, unknown>) => {
  * Get a single product by ID.
  */
 const getOneById = async (id: string): Promise<TUserProfile | null> => {
-  const product = await UserProfile.findOne({ userId: id });
+  const product = await UserProfile.findOne({ userId: id }).populate(
+    'userId',
+    'fullName isHero isSupported',
+  );
+
+  console.log("==== product =====>>>>>> ", product)
   return product;
 };
 

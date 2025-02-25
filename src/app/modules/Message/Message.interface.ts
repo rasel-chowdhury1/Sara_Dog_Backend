@@ -5,7 +5,7 @@ export type TMessage = {
   chat: Types.ObjectId; // Reference to Chat
   sender: Types.ObjectId; // Sender of the message
   text?: string; // Optional text content
-  image?: string; // Optional image URL
+  images?: string; // Optional image URL
   // document?: string; // Optional document URL
   readBy: Types.ObjectId[]; // Users who have read the message
   createdAt: Date; // Timestamp for creation

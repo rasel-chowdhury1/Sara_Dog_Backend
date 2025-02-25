@@ -43,6 +43,16 @@ const chatSchema = new Schema<TChat, ChatModel>(
       type: Object, // Dynamic structure for unread counts
       default: {}, // Initialize as an empty object
     },
+    blockedUsers: {
+      type: [Schema.Types.ObjectId], // Users who are blocked
+      default: [],
+      ref: 'User',
+    },
+    deletedFor: {
+      type: [Schema.Types.ObjectId], // Users who have deleted the chat
+      default: [],
+      ref: 'User',
+    },
   },
   {
     timestamps: true, // Automatically add `createdAt` and `updatedAt`

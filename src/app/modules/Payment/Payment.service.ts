@@ -75,7 +75,7 @@ const processPayment = async (id: string): Promise<TPayment> => {
 
     await User.findByIdAndUpdate(
       paymentRecord.userId,
-      { status: 'Paid' },
+      { isSupported: true },
       { new: true, session },
     );
     const user = await User.findById(paymentRecord.userId);

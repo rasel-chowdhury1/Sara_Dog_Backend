@@ -26,6 +26,9 @@ const addNew = catchAsync(async (req: Request, res: Response) => {
 
 const getAll = catchAsync(async (req: Request, res: Response) => {
   const Donations = await DonationService.getAll(req.query);
+  console.log("=====donations ==== ", Donations)
+
+  
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

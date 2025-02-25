@@ -2,7 +2,7 @@ import { Router } from 'express';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
 import { MessageController } from './Message.controller';
-const upload = fileUpload('./public/uploads/profile');
+const upload = fileUpload('./public/uploads/message');
 
 const router = Router();
 
@@ -23,6 +23,12 @@ router.post(
   // },
   // validateRequest(MessageValidations.addMessageValidationSchema),
   MessageController.SendNewMessage,
+);
+
+router.post(
+  '/uploadImage',
+  upload.single('file'),
+  MessageController.uploadImageForSendMessage
 );
 
 router.get('/full-chat/:chatId', MessageController.GetChatMessages);

@@ -1,14 +1,12 @@
-import { Aggregate, Document } from 'mongoose';
-import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import { TUserProfile } from '../UserProfile/UserProfile.interface';
 import { UserProfile } from '../UserProfile/UserProfile.models';
 
 import httpStatus from 'http-status';
-import { PetProfile } from '../PetProfile/PetProfile.models';
-import { TPetProfile } from '../PetProfile/PetProfile.interface';
 import AggregationQueryBuilder from '../../builder/AggregationQueryBuilder';
-
+import { BlockUser } from '../BlockedUser/BlockedUser.model';
+import { TPetProfile } from '../PetProfile/PetProfile.interface';
+import { PetProfile } from '../PetProfile/PetProfile.models';
 
 // const nearFriends = async (
 //   userId: string,
@@ -107,9 +105,7 @@ import AggregationQueryBuilder from '../../builder/AggregationQueryBuilder';
 //   return { meta, enrichedResults };
 // };
 
-
 // export default nearFriends;
-
 
 // ====== done ====
 
@@ -119,7 +115,11 @@ const nearFriends = async (
 ): Promise<TUserProfile[] | any> => {
   console.log(userId);
 
-  const userProfile = await UserProfile.findOne({ userId: userId });
+  const userProfile = await UserProfile.findOne({ userId: userId }).populate(
+    'petsProfileId',
+  );
+
+  console.log('----------- user profile ====== >>>>>> ', userProfile);
   if (!userProfile) {
     throw new AppError(httpStatus.NOT_FOUND, 'User profile not found');
   }
@@ -135,80 +135,211 @@ const nearFriends = async (
 
   // Exclude the current user from results
   query.userId = { $ne: userId };
+
   const nearbyFriendsQuery = new AggregationQueryBuilder(UserProfile, query)
-    .geoNear([userLongitude, userLatitude], 10) // 10-mile radius
-    //  .match({ userId: { $ne: userId } }) // Exclude current user
-    .filter([])
-    // .lookup('PetProfile', '_id', 'petsProfileId', 'petsProfile') // Join pet profiles
+    .geoNear([userLongitude, userLatitude], 200) // 10-mile radius
+    // .filter([])
     .addFields({ distanceInMiles: { $divide: ['$distanceInMiles', 1609.34] } }) // Convert meters to miles['$distanceOfFriend', 1609.34]
+    .sort()
+    .paginate();
+  // .fields();
+  const meta = await nearbyFriendsQuery.countTotal();
+  let result = await nearbyFriendsQuery.execute();
+  //  console.log('===== before populate result  === ', result);
+  result = await UserProfile.populate(result, {
+    path: 'userId petsProfileId ',
+  });
+
+  // console.log("===== result === ", result);
+
+  // Step 4: Now query PetProfile with the same query filters (except location)
+  const petQuery = new AggregationQueryBuilder(PetProfile, query)
+    .filter([
+      'name',
+      'age',
+      'size',
+      'neuteredSpayed',
+      'howDoYouPlay',
+      'doYouLikeACrowd',
+      'playSizePreferences',
+      'locationPreferences',
+      'address',
+    ]) // Apply the filters for PetProfile
     .sort()
     .paginate()
     .fields();
-  const meta = await nearbyFriendsQuery.countTotal();
-  let result = await nearbyFriendsQuery.execute();
-  result = await UserProfile.populate(result, { path: 'petsProfileId' });
 
-    // Step 4: Now query PetProfile with the same query filters (except location)
-    const petQuery = new AggregationQueryBuilder(PetProfile, query)
-      .filter([
-        'name',
-        'age',
-        'size',
-        'neuteredSpayed',
-        'howDoYouPlay',
-        'doYouLikeACrowd',
-        'playSizePreferences',
-        'locationPreferences',
-        'address',
-      ]) // Apply the filters for PetProfile
-      .sort()
-      .paginate()
-      .fields();
+  const petProfiles = await petQuery.execute();
 
-    const petProfiles = await petQuery.execute()
+  // console.log("=== pet query data ==== ", petProfiles)
 
-    // console.log("=== pet query data ==== ", petProfiles)
+  // console.log('result from userId friends ======>>>>>> ', userId);
+  // console.log('result from near friends ======>>>>>> ', result);
 
-    // Step 5: Return the result enriched with PetProfiles and their data
-  const enrichedResults = result.map((user) => {
-    // Find associated PetProfile for each UserProfile
-    const petProfile = petProfiles.find(
-      (pet) => pet.userId.toString() === user.userId.toString(),
+  const BlockUserOfSpecificUser = await BlockUser.findOne({ user_id: userId });
+  // console.log("==== specific user ___>>> ", userId)
+  // console.log("==== block user of specific user ___>>> ", BlockUserOfSpecificeUser)
+
+  // let filteredResult = result.filter(
+  //   (friend) => friend.userId._id.toString() !== userId,
+  // );
+
+  // let filResult = filteredResult.filter((friend) =>
+  //   !BlockUserOfSpecificeUser?.blocked_users?.includes(friend.userId._id),
+  // );
+
+  // console.log("==== filtered Result====>>>>> ", filteredResult)
+
+  console.log(
+    'Blocked Users of Specific User:',
+    BlockUserOfSpecificUser?.blocked_users || [],
+  );
+
+  // Fetch blocked users for all friends in one query (OPTIMIZATION)
+  const allBlockedUsers = await BlockUser.find({
+    user_id: { $in: result.map((friend) => friend.userId._id) },
+  }).lean();
+
+  // Convert blocked users into a map for quick lookup
+  const blockedUsersMap = new Map(
+    allBlockedUsers.map((doc) => [
+      doc.user_id.toString(),
+      doc.blocked_users.map((id) => id.toString()),
+    ]),
+  );
+
+  // Filter users based on block status
+  let filteredResult = result.filter((friend) => {
+    const friendId = friend.userId._id.toString();
+
+    // Check if the current user has blocked this friend
+    const isBlockedByMe = BlockUserOfSpecificUser?.blocked_users?.some(
+      (blockedId) => blockedId.toString() === friendId,
     );
 
-    
+    // Check if this friend has blocked the current user
+    const isBlockedByThem = blockedUsersMap.get(friendId)?.includes(userId);
 
+    return !isBlockedByMe && !isBlockedByThem;
+  });
+
+  let filResult = filteredResult.filter(
+    (friend) => friend.userId._id.toString() !== userId,
+  );
+
+  console.log('Final Filtered Result:', filteredResult);
+
+  // Step 5: Return the result enriched with PetProfiles and their data
+  const enrichedResults = filResult.map((user) => {
+    // Find associated PetProfile for each UserProfile
+    const petProfile = petProfiles.find(
+      (pet) => pet.userId.toString() === user.userId._id.toString(),
+    );
+
+    //  console.log("=== petProfile ====", petProfile)
+    //   console.log('===== user petProfile === ', user.petsProfileId);
+
+    // let message = '';
+    // let totalMatchItems = 8;
+    // let countMatch = 0;
+
+    // if (petProfile) {
+    //   // Set message based on matching filter values
+    //   if (petProfile.age === userProfile?.petsProfileId?.age){
+    //     countMatch++;
+    //     if(!message) message += `Age matched.`;
+    //   }
+    //   if (petProfile.size === userProfile?.petsProfileId?.size) {
+    //     countMatch++;
+    //     if (!message) message += `Size matched.`;
+    //   }
+    //   if (
+    //     petProfile.neuteredSpayed === userProfile?.petsProfileId?.neuteredSpayed
+    //   ) {
+    //     countMatch++;
+    //     if (!message)
+    //       message += `Neutered/Spayed matched.`;
+    //   }
+    //   if (
+    //     petProfile.howDoYouPlay === userProfile?.petsProfileId?.howDoYouPlay
+    //   ) {
+    //     countMatch++;
+    //     if (!message)
+    //       message += `Play style matched.`;
+    //   }
+    //   if (
+    //     petProfile.doYouLikeACrowd ===
+    //     userProfile?.petsProfileId?.doYouLikeACrowd
+    //   ) {
+    //     countMatch++;
+    //     if (!message)
+    //       message += `Crowd preference matched.`;
+    //   }
+    //   if (
+    //     petProfile.playSizePreferences ===
+    //     userProfile?.petsProfileId?.playSizePreferences
+    //   ) {
+    //     countMatch++;
+    //     if (!message)
+    //       message += `Play size preference matched.`;
+    //   }
+    //   if (
+    //     petProfile.locationPreferences ===
+    //     userProfile?.petsProfileId?.locationPreferences
+    //   ) {
+    //     countMatch++;
+    //     if (!message)
+    //       message += `Location preference matched. `;
+    //   }
+    //   if (petProfile.address === userProfile?.petsProfileId?.address) {
+    //     countMatch++;
+    //     if (!message) message += `Address matched.`;
+    //   }
+    // } else {
+    //   message = 'Nearby at you.';
+    // }
+
+    const totalMatchItems = 8;
+    let countMatch = 0;
     let message = '';
+
     if (petProfile) {
-      // Set message based on matching filter values
-      if (petProfile.age === user?.petsProfileId?.age)
-        message += `Age matches: ${petProfile.age} years. `;
-      else if (petProfile.size === user?.petsProfileId?.size)
-        message += `Size matches: ${petProfile.size}. `;
-      else if (petProfile.neuteredSpayed === user?.petsProfileId?.neuteredSpayed)
-        message += `Neutered/Spayed matches: ${petProfile.neuteredSpayed}. `;
-      else if (petProfile.howDoYouPlay === user?.petsProfileId?.howDoYouPlay)
-        message += `Play style matches: ${petProfile.howDoYouPlay}. `;
-      else if (petProfile.doYouLikeACrowd === user?.petsProfileId?.doYouLikeACrowd)
-        message += `Crowd preference matches: ${petProfile.doYouLikeACrowd}. `;
-      else if (petProfile.playSizePreferences === user?.petsProfileId?.playSizePreferences)
-        message += `Play size preference matches: ${petProfile.playSizePreferences}. `;
-      else if (petProfile.locationPreferences === user?.petsProfileId?.locationPreferences)
-        message += `Location preference matches: ${petProfile.locationPreferences}. `;
-      else if (petProfile.address === user?.petsProfileId?.address)
-        message += `Address matches: ${petProfile.address}. `;
+      const matchFields: { key: keyof TPetProfile; label: string }[] = [
+        { key: 'age', label: 'Age matched.' },
+        { key: 'size', label: 'Size matched.' },
+        { key: 'neuteredSpayed', label: 'Neutered/Spayed matched.' },
+        { key: 'howDoYouPlay', label: 'Play style matched.' },
+        { key: 'doYouLikeACrowd', label: 'Crowd preference matched.' },
+        { key: 'playSizePreferences', label: 'Play size preference matched.' },
+        { key: 'locationPreferences', label: 'Location preference matched.' },
+        { key: 'address', label: 'Address matched.' },
+      ];
+
+      // Count all matches but take the first match message
+      for (const { key, label } of matchFields) {
+        if (petProfile[key] === userProfile?.petsProfileId?.[key]) {
+          countMatch++;
+          if (!message) {
+            // Only set the message on the first match
+            message = label;
+          }
+        }
+      }
     } else {
-      message = 'Address matching...';
+      message = 'Nearby at you.';
     }
 
-    return { ...user, message };
-  })
+    const totalPercentage = totalMatchItems
+      ? (countMatch / totalMatchItems) * 100
+      : 0;
+
+    return { ...user, message, totalPercentage };
+  });
 
   // console.log("==== enriched results === ", enrichedResults)
 
   return { meta, result: enrichedResults };
 };
-
 
 // const nearFriends = async (
 //   userId: string,
@@ -248,10 +379,6 @@ const nearFriends = async (
 
 //   return { meta, result };
 // };
-
-
-
-
 
 // const nearFriends = async (userId: string): Promise<TUserProfile[] | any> => {
 //   console.log(userId);
@@ -297,7 +424,6 @@ const nearFriends = async (
 
 //   return nearbyPets;
 // };
-
 
 // const nearFriends = async (userId: string): Promise<TUserProfile[] | any> => {
 //   console.log(userId);

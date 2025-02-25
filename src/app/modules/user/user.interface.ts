@@ -18,6 +18,8 @@ export interface TUser extends TUserCreate {
   location?: string;
   isActive: boolean;
   isDeleted: boolean;
+  isHero: boolean;
+  isSupported: boolean;
 }
 
 export interface DeleteAccountPayload {

@@ -49,6 +49,12 @@ userRoutes
     parseData(),
     userController.updateMyProfile,
   )
+
+  .patch(
+    '/badgeUpdate/:userId',
+    auth(USER_ROLE.ADMIN),
+    userController.updateUserBadgeByAdmin
+  )
   .delete(
     '/delete-my-account',
     auth(USER_ROLE.ADMIN, USER_ROLE.USER),

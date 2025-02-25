@@ -81,7 +81,10 @@ const getAll = async (query: Record<string, unknown>) => {
  * Get a single product by ID.
  */
 const getOneById = async (id: string): Promise<TPetProfile | null> => {
-  const product = await PetProfile.findOne({ userId: id });
+  const product = await PetProfile.findOne({ userId: id }).populate(
+    'userId',
+    'isHero isSupported',
+  );
   return product;
 };
 

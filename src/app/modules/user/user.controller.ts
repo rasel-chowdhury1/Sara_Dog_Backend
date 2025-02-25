@@ -129,6 +129,19 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateUserBadgeByAdmin = catchAsync(async (req: Request, res: Response) => {
+  
+   const { userId } = req.params;
+
+  const result = await userService.updateUserBadgeByAdmin(userId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'profile Badge updated successfully',
+    data: result,
+  });
+});
+
 const blockedUser = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.blockedUser(req.params.id);
   sendResponse(res, {
@@ -156,6 +169,7 @@ export const userController = {
   getUserById,
   getMyProfile,
   updateMyProfile,
+  updateUserBadgeByAdmin,
   blockedUser,
   deleteMyAccount,
   getAllUsers,
