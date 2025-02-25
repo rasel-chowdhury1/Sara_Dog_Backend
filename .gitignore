@@ -7,7 +7,7 @@ nn.ts
 
 public/
 
-
+.env
 
 .vercel
 dist
