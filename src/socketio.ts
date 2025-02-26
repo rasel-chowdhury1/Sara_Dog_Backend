@@ -67,10 +67,11 @@ const initializeSocketIO = (server: HttpServer) => {
       // // console.log({ token });
       // //----------------------check Token and return user details-------------------------//
       const user: any = await getUserDetailsFromToken(token);
+      console.log('======== user ==== ', user);
 
       const userProfile: any = await PetProfile.findOne({userId: user._id.toString()}).select("name")
 
-      console.log("======== user ==== ", user)
+      
       console.log("======== user profile ==== ", userProfile)
 
       // console.log({ user });
