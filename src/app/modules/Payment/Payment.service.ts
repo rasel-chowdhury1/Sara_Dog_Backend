@@ -48,21 +48,79 @@ function makeHttpsRequest(
   });
 }
 
-const processPayment = async (id: string): Promise<TPayment> => {
-  console.log("====== payment id ==== ", id)
-  const paymentRecord = await Payment.findById(id);
+// const processPayment = async (id: string): Promise<TPayment> => {
+//   console.log("====== payment id ==== ", id)
+//   const paymentRecord = await Payment.findById(id);
 
-  console.log("========= paymnent record ====== >",paymentRecord)
+//   console.log("========= paymnent record ====== >",paymentRecord)
+
+//   if (!paymentRecord) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
+//   }
+  
+//   if (paymentRecord.status !== 'pending') {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Payment already processed');
+//   }
+
+//   const session = await mongoose.startSession();
+
+//   try {
+//     session.startTransaction();
+
+//     const result = await Payment.findByIdAndUpdate(
+//       id,
+//       { status: 'success' },
+//       { new: true, session },
+//     );
+
+//     await User.findByIdAndUpdate(
+//       paymentRecord.userId,
+//       { isSupported: true },
+//       { new: true, session },
+//     );
+//     const user = await User.findById(paymentRecord.userId);
+//     if (!user) {
+//       throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+//     }
+//     await Donation.create({
+//       userId: user._id,
+//       name: user.fullName,
+//       email: user.email,
+//       amount: paymentRecord.amount,
+//       transectionId: paymentRecord.transactionId,
+//     });
+
+//     await session.commitTransaction();
+//     return result as TPayment;
+//   } catch (error) {
+//     await session.abortTransaction();
+//     console.log("=== payment error --->>> ", error)
+//     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
+//   } finally {
+//     await session.endSession();
+//   }
+// };
+
+
+
+
+
+
+const processPayment = async (id: string): Promise<TPayment> => {
+  console.log('====== Payment ID ====== ', id);
+
+  const paymentRecord = await Payment.findById(id);
+  console.log('========= Payment Record ======>', paymentRecord);
 
   if (!paymentRecord) {
     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
   }
-  
+
   if (paymentRecord.status !== 'pending') {
     throw new AppError(httpStatus.BAD_REQUEST, 'Payment already processed');
   }
 
-  const session = await mongoose.startSession();
+  const session = await mongoose.startSession(); // Start a transaction session
 
   try {
     session.startTransaction();
@@ -78,26 +136,35 @@ const processPayment = async (id: string): Promise<TPayment> => {
       { isSupported: true },
       { new: true, session },
     );
+
     const user = await User.findById(paymentRecord.userId);
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }
-    await Donation.create({
-      userId: user._id,
-      name: user.fullName,
-      email: user.email,
-      amount: paymentRecord.amount,
-      transectionId: paymentRecord.transactionId,
-    });
+
+    await Donation.create(
+      [
+        {
+          userId: user._id,
+          name: user.fullName,
+          email: user.email,
+          amount: paymentRecord.amount,
+          transactionId: paymentRecord.transactionId,
+        },
+      ],
+      { session },
+    );
 
     await session.commitTransaction();
+    session.endSession();
+
     return result as TPayment;
   } catch (error) {
     await session.abortTransaction();
-    console.log("=== payment error --->>> ", error)
+    session.endSession();
+
+    console.error('=== Payment Error ===>>> ', error);
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
-  } finally {
-    await session.endSession();
   }
 };
 /**
