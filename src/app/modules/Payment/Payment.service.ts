@@ -94,6 +94,7 @@ const processPayment = async (id: string): Promise<TPayment> => {
     return result as TPayment;
   } catch (error) {
     await session.abortTransaction();
+    console.log("=== payment error --->>> ", error)
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
   } finally {
     await session.endSession();
