@@ -18,10 +18,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    // origin: true,
-
     origin: ['https://woofspot.net', 'http://localhost:3000'],
-    // credentials: true,
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   }),
 );
