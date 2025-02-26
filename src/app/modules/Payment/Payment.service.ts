@@ -149,7 +149,7 @@ const processPayment = async (id: string): Promise<TPayment> => {
           name: user.fullName,
           email: user.email,
           amount: paymentRecord.amount,
-          transactionId: paymentRecord.transactionId,
+          transectionId: paymentRecord.transactionId,
         },
       ],
       { session },
