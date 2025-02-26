@@ -51,7 +51,7 @@ const initializeSocketIO = (server: HttpServer) => {
         socket.handshake.auth.token ||
         (socket.handshake?.headers?.token as string);
 
-      // console.log('konojhoi', socket.handshake);
+      console.log('konojhoi', socket.handshake);
 
       if (!token) {
         socket.emit('io-error', {

@@ -33,23 +33,23 @@ async function main() {
 }
 main();
 
-// // Graceful shutdown for unhandled rejections
-// process.on('unhandledRejection', (err) => {
-//   console.error(`Unhandled rejection detected: ${err}`);
-//   if (server) {
-//     server.close(() => {
-//       process.exit(1);
-//     });
-//   }
-//   process.exit(1); // Ensure process exits
-// });
+// Graceful shutdown for unhandled rejections
+process.on('unhandledRejection', (err) => {
+  console.error(`Unhandled rejection detected: ${err}`);
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1); // Ensure process exits
+});
 
-// // Graceful shutdown for uncaught exceptions
-// process.on('uncaughtException', (err) => {
-//   console.error(`Uncaught exception detected: ${err}`);
-//   if (server) {
-//     server.close(() => {
-//       process.exit(1);
-//     });
-//   }
-// });
+// Graceful shutdown for uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error(`Uncaught exception detected: ${err}`);
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+});

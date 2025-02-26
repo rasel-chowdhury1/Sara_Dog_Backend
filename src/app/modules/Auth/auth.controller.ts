@@ -11,6 +11,7 @@ import AppError from '../../error/AppError';
 
 // login
 const login = catchAsync(async (req: Request, res: Response) => {
+  console.log("===login body +++>>>> ", req.body);
   const result = await authServices.login(req.body);
   const { refreshToken } = result;
   // set refresh token into cookie
