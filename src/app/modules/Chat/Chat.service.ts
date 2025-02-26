@@ -6,6 +6,8 @@ import { User } from '../user/user.models';
 import { TChat } from './Chat.interface';
 import { Chat } from './Chat.models';
 
+
+
 // Convert string to ObjectId
 const toObjectId = (id: string): mongoose.Types.ObjectId =>
   new mongoose.Types.ObjectId(id);
@@ -145,7 +147,7 @@ const getUserChats = async (userId: string): Promise<TChat[]> => {
   // console.log("====== service file of get user chats =>>>>> ", result )
   // Filter out chats where the userId exists in deletedFor
   const filteredResult = result.filter(
-    (chat) => !chat.deletedFor.includes(userId),
+    (chat) => !chat.deletedFor.includes(toObjectId(userId)),
   );
 
   // filteredResult = result.filter((chat) => !chat.blockedUsers.includes(userId));
@@ -248,17 +250,17 @@ const blockUser = async (
     throw new Error('Chat not found');
   }
 
-  if (!chat.users.includes(userId)) {
+  if (!chat.users.includes(toObjectId(userId))) {
     throw new Error('User is not part of this chat');
   }
 
-  if (!chat.users.includes(blockUserId)) {
+  if (!chat.users.includes(toObjectId(blockUserId))) {
     throw new Error('User is not part of this chat');
   }
 
   console.log(
     '====== blocked User id chat is exist ==== === ',
-    chat.blockedUsers.includes(blockUserId),
+    chat.blockedUsers.includes(toObjectId(blockUserId)),
   );
   console.log('====== blocked User id  ==== === ', blockUserId);
   console.log(
@@ -266,7 +268,7 @@ const blockUser = async (
     chat.blockedUsers.includes(toObjectId(blockUserId)),
   );
   // Add user to blocked list
-  if (chat.blockedUsers.includes(blockUserId)) {
+  if (chat.blockedUsers.includes(toObjectId(blockUserId))) {
     throw new Error('User is already blocked.');
   }
 
@@ -325,15 +327,15 @@ const unblockUser = async (
     throw new Error('Chat not found');
   }
 
-  if (!chat.users.includes(userId)) {
+  if (!chat.users.includes(toObjectId(userId))) {
     throw new Error('User is not part of this chat');
   }
 
-  if (!chat.users.includes(blockUserId)) {
+  if (!chat.users.includes(toObjectId(blockUserId))) {
     throw new Error('User is not part of this chat');
   }
 
-  if (!chat.users.includes(blockUserId)) {
+  if (!chat.users.includes(toObjectId(blockUserId))) {
     throw new Error('User is not part of this chat');
   }
 
@@ -358,13 +360,13 @@ const deleteChatForUser = async (
     throw new Error('Chat not found');
   }
 
-  if (!chat.users.includes(userId)) {
+  if (!chat.users.includes(toObjectId(userId))) {
     throw new Error('User is not part of this chat');
   }
 
   // Add user to deletedFor list
-  if (!chat.deletedFor.includes(userId)) {
-    chat.deletedFor.push(userId);
+  if (!chat.deletedFor.includes(toObjectId(userId))) {
+    chat.deletedFor.push(toObjectId(userId));
   }
 
   // If all users delete the chat, remove it permanently

@@ -317,7 +317,9 @@ const nearFriends = async (
 
       // Count all matches but take the first match message
       for (const { key, label } of matchFields) {
-        if (petProfile[key] === userProfile?.petsProfileId?.[key]) {
+        if (
+          petProfile[key] === (userProfile?.petsProfileId as any)[key]
+        ) {
           countMatch++;
           if (!message) {
             // Only set the message on the first match
