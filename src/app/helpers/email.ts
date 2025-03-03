@@ -2,7 +2,8 @@ import config from "../config";
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  // host: 'smtp.gmail.com',
+  host: 'smtp.namecheap.com',
   port: 465,
   secure: true,
   auth: {
@@ -16,7 +17,7 @@ const supportEmailWithNodemailer = async (emailData: any) => {
   try {
     const mailOptions = {
       from: emailData.email, // sender address
-      to: 'raseldev847@gmail.com', // list of receivers
+      to: 'information@woofspot.net', // list of receivers
       subject: emailData.subject, // Subject line
       html: emailData.html, // html body
     };
