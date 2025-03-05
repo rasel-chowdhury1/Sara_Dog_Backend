@@ -73,6 +73,7 @@ const createUserToken = async (payload: TUserCreate) => {
 
   // send email
   process.nextTick(async () => {
+
     await otpSendEmail({
       sentTo: email,
       subject: 'Your one time otp for email  verification',
@@ -80,6 +81,7 @@ const createUserToken = async (payload: TUserCreate) => {
       otp,
       expiredAt: expiredAt,
     });
+    
   });
 
   // crete token
