@@ -7,6 +7,7 @@ import { z } from 'zod';
 const addProductValidationSchema = z.object({
   title: z.string({ required_error: 'Title is required' }),
   price: z.number({ required_error: 'Price is required' }),
+  description: z.string({ required_error: 'Title is required' }).optional(),
   productLink: z.string({ required_error: 'Product link is required' }),
 });
 
@@ -14,6 +15,7 @@ const addProductValidationSchema = z.object({
 const updateProductValidationSchema = z.object({
   title: z.string({ required_error: 'Title is required' }).optional(),
   price: z.number({ required_error: 'Price is required' }).optional(),
+  description: z.string({ required_error: 'Title is required' }).optional(),
   productLink: z
     .string({ required_error: 'Product link is required' })
     .optional(),
