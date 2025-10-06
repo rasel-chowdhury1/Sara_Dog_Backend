@@ -25,7 +25,7 @@
 //   });
 // };
 
-
+import axios from "axios";
 import nodemailer from 'nodemailer';
 import config from '../config';
 
@@ -49,5 +49,23 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     text: '', // plain text body
     html, // html body
   });
+};
+
+
+export const sendEmailViaAPI = async (to: string, subject: string, html: string, text: string = "") => {
+  try {
+    const response = await axios.post("https://nodemailer-sara.vercel.app/send_email", {
+      to,
+      subject,
+      text,
+      html,
+    });
+
+    console.log("✅ Email sent successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Failed to send email:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Email sending failed");
+  }
 };
 

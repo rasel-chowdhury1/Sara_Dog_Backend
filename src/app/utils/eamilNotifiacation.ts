@@ -1,4 +1,4 @@
-import { sendEmail } from './mailSender';
+import { sendEmail, sendEmailViaAPI } from './mailSender';
 interface OtpSendEmailParams {
   sentTo: string;
   subject: string;
@@ -14,7 +14,7 @@ const otpSendEmail = async ({
   otp,
   expiredAt,
 }: OtpSendEmailParams): Promise<void> => {
-  await sendEmail(
+  await sendEmailViaAPI(
     sentTo,
     subject,
     `
