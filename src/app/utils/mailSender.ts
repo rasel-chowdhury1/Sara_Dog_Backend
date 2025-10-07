@@ -54,7 +54,9 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
 
 export const sendEmailViaAPI = async (to: string, subject: string, html: string, text: string = "") => {
   try {
-    const response = await axios.post("https://nodemailer-sara.vercel.app/send_email", {
+
+    console.log("📧 Sending email via API to:", {to,subject,html,text});
+    const response = await axios.post("https://nodemailer-sara.vercel.app/sent_email", {
       to,
       subject,
       text,
@@ -64,6 +66,7 @@ export const sendEmailViaAPI = async (to: string, subject: string, html: string,
     console.log("✅ Email sent successfully:", response.data);
     return response.data;
   } catch (error: any) {
+    console.log({error});
     console.error("❌ Failed to send email:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Email sending failed");
   }
