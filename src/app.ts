@@ -31,6 +31,9 @@ app.use(
 
 app.use(logHttpRequests);
 
+// ✅ Add this line before rate limiter or any middleware using IP
+app.set('trust proxy', 1); // Trust first proxy (needed for Nginx/PM2 setup)
+
 // 👮 Rate Limiter Middleware (apply to all requests)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
