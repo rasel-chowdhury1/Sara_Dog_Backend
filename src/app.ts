@@ -20,27 +20,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// app.use(
-//   cors({
-//     // origin: true,git ad
-//     origin: 'https://woofspot.net',
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-//   }),
-// );
+app.use(
+  cors({
+    // origin: true,git ad
+    origin: 'https://woofspot.net',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  }),
+);
 
-// 🟢 CORS setup
-const corsOptions = {
-  origin: 'https://woofspot.net', 
-  credentials: true,              // allow cookies/auth headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-};
+// // 🟢 CORS setup
+// const corsOptions = {
+//   origin: 'https://woofspot.net', 
+//   credentials: true,              // allow cookies/auth headers
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // Handle preflight OPTIONS requests globally
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions));
 
 
 app.use(logHttpRequests);
