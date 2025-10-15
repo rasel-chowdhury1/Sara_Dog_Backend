@@ -100,6 +100,7 @@ const initializeSocketIO = (server: HttpServer) => {
           //     onlineUsers.push(userId);
           //   }
           // }
+          console.log("user data =>>>> ", user);
           const userId = user._id.toString();
 
           if (!onlineUsers.includes(userId)) {
