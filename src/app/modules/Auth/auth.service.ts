@@ -24,10 +24,10 @@ import { TPurposeType } from '../otp/otp.interface';
 
 // Login
 const login = async (payload: TLogin) => {
-  console.log(payload);
+
   const user = await User.isUserActive(payload?.email);
   // const user = await User.findOne({ email: payload?.email });
-  console.log(user);
+
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
   }
@@ -50,7 +50,7 @@ const login = async (payload: TLogin) => {
     role: user?.role,
   };
 
-  console.log({ jwtPayload });
+
 
   const accessToken = createToken({
     payload: jwtPayload,
@@ -58,7 +58,7 @@ const login = async (payload: TLogin) => {
     expity_time: config.jwt_access_expires_in as string,
   });
 
-  console.log({ accessToken });
+
 
   const refreshToken = createToken({
     payload: jwtPayload,
@@ -143,26 +143,24 @@ const forgotPasswordOtpMatch = async ({
   otp,
   token,
 }: OTPVerifyAndCreateUserProps) => {
-  console.log({ otp, token });
+
   if (!token) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Token not found');
   }
 
-  console.log('before decode');
 
   const decodeData = verifyToken({
     token,
     access_secret: config.jwt_access_secret as string,
   });
 
-  console.log('after decode');
 
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
   }
 
   const { email } = decodeData;
-  console.log(otp);
+
 
   const isOtpMatch = await otpServices.otpMatch(email, otp, "forget-password");
 
@@ -206,7 +204,7 @@ const resetPassword = async ({
   newPassword: string;
   confirmPassword: string;
 }) => {
-  console.log(newPassword, confirmPassword);
+
   if (newPassword !== confirmPassword) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }

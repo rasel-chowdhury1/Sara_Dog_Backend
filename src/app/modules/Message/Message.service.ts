@@ -108,7 +108,7 @@ const ReadAllMessages = async (
   userId: string,
   chatId: string,
 ): Promise<void> => {
-  console.log(userId, chatId);
+
 
   await Message.updateMany(
     {

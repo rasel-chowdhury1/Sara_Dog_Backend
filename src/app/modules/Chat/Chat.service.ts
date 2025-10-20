@@ -36,7 +36,6 @@ const addNewChat = async (
       isGroupChat: false, // Must be an individual chat
     });
 
-    console.log('=========existing chat ====>>>>> ', existingChat);
     // const { deletedFor, users } = existingChat;
 
     if (
@@ -123,7 +122,7 @@ const leaveUserFromSpecific = async (payload: any) => {
     );
   }
 
-  console.log({ chat });
+
   // Save the updated chat
   await chat.save();
 
@@ -188,10 +187,6 @@ const getUserChats = async (userId: string): Promise<TChat[]> => {
     }),
   );
 
-  console.log(
-    '================ enriched chat resutl ===>>>>>>> ',
-    enrichedResult,
-  );
   return enrichedResult;
 };
 
@@ -245,7 +240,7 @@ const blockUser = async (
 ): Promise<TChat | null> => {
   const chat = await Chat.findById(chatId);
 
-  console.log({ chat });
+
   if (!chat) {
     throw new Error('Chat not found');
   }
@@ -258,15 +253,7 @@ const blockUser = async (
     throw new Error('User is not part of this chat');
   }
 
-  console.log(
-    '====== blocked User id chat is exist ==== === ',
-    chat.blockedUsers.includes(toObjectId(blockUserId)),
-  );
-  console.log('====== blocked User id  ==== === ', blockUserId);
-  console.log(
-    '====== blocked User id chat is exist ==== === ',
-    chat.blockedUsers.includes(toObjectId(blockUserId)),
-  );
+
   // Add user to blocked list
   if (chat.blockedUsers.includes(toObjectId(blockUserId))) {
     throw new Error('User is already blocked.');
@@ -321,8 +308,7 @@ const unblockUser = async (
   blockUserId: string,
 ) => {
   const chat = await Chat.findById(chatId);
-  console.log('===== chat data =====>>>> ', chat);
-  console.log('====response ===', { chatId, userId, blockUserId });
+
   if (!chat) {
     throw new Error('Chat not found');
   }

@@ -5,13 +5,11 @@ import config from '../config';
 import { User } from '../modules/user/user.models';
 
 const getUserDetailsFromToken = async (token: string) => {
-  console.log("token from getUserDetails -> ", token)
   if (!token) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized!');
   }
 
   let decode: any;
-  // console.log(config.jwt_access_secret)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   try {
      decode = await jwt.verify(
@@ -25,7 +23,6 @@ const getUserDetailsFromToken = async (token: string) => {
     );
   }
 
-  // console.log({decode})
   const user = await User.findById(decode.userId).select('-password');
   return user;
 };

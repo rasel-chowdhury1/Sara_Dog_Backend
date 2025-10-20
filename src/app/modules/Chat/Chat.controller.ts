@@ -7,7 +7,7 @@ import { PetProfile } from '../PetProfile/PetProfile.models';
 import { storeFile } from '../../utils/fileHelper';
 
 const addNewChat = catchAsync(async (req: Request, res: Response) => {
-  console.log('req body -> ', req.body);
+
   // const UserProfileData = JSON.parse(req.body.data);
   // console.log({ UserProfileData });
   // const file = req?.file as Express.Multer.File;
@@ -33,7 +33,7 @@ const leaveUserFromSpecificChatController = catchAsync(
     const { chatId } = req.params;
     const userId = req.user.userId;
 
-    console.log('req user = > ', req.user);
+
     const payload = {
       chatId,
       userId
@@ -41,7 +41,7 @@ const leaveUserFromSpecificChatController = catchAsync(
 
     const PetProfileData = await PetProfile.findOne({userId}).select("name")
     
-    console.log({payload})
+
     const result = await ChatService.leaveUserFromSpecific(payload);
     sendResponse(res, {
       statusCode: httpStatus.CREATED,

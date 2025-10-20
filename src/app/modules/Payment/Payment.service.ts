@@ -107,10 +107,9 @@ function makeHttpsRequest(
 
 
 const processPayment = async (id: string): Promise<TPayment> => {
-  console.log('====== Payment ID ====== ', id);
 
   const paymentRecord = await Payment.findById(id);
-  console.log('========= Payment Record ======>', paymentRecord);
+
 
   if (!paymentRecord) {
     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
@@ -180,7 +179,7 @@ const createPayment = async (data: TPayment): Promise<TPayment | any> => {
 
   const result1 = await Payment.create(data);
 
-  console.log("====== payment result data ===== >>> ", result1)
+
   if (!result1) {
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
   }

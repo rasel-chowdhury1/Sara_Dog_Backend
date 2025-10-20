@@ -41,7 +41,7 @@ const initializeSocketIO = (server: HttpServer) => {
     io.on('connection', async (socket) => {
       // console.log({ socket });
       // console.log('room -> ', socket.rooms);
-      console.log('connected', socket?.id);
+      // console.log('connected', socket?.id);
 
       //----------------------user token get from front end-------------------------//
 
@@ -51,7 +51,7 @@ const initializeSocketIO = (server: HttpServer) => {
         socket.handshake.auth.token ||
         (socket.handshake?.headers?.token as string);
 
-      console.log('konojhoi', socket.handshake);
+
 
       if (!token) {
         socket.emit('io-error', {
@@ -116,14 +116,11 @@ const initializeSocketIO = (server: HttpServer) => {
         });
 
         socket.on('send-new-message', async (message, callback) => {
-          console.log('===== new message ====>', { message });
 
           try {
             // Assuming `getChatById` fetches the chat object including the users array
             const chat = await getChatById(message.chat);
 
-            console.log("===== chat messag ==>>>>>> ",{ chat });
-            // console.log(chat.users);
             let newMessage: any;
             let userData;
 
@@ -140,12 +137,10 @@ const initializeSocketIO = (server: HttpServer) => {
               });
               return 
 
-              // console.log("after excution ===>>>>>>>> ")
             }
 
               if (chat) {
                 newMessage = await Message.create(message);
-                console.log('====== created message ==>>>>> ', { newMessage });
                 
 
                 if (message?.sender === null) {
@@ -177,25 +172,18 @@ const initializeSocketIO = (server: HttpServer) => {
                     deletedFor
                   });
                 }
-                // console.log({ userData });
               }
-            // console.log(message?.chat);
             const chatId = message?.chat;
-            // console.log({ ...message, userData });
 
             const petProfileData = await PetProfile.findOne({
               userId: message?.sender,
             });
 
-            console.log({ petProfileData });
+
 
             message.name = petProfileData?.name;
             message.image = petProfileData?.image;
 
-            console.log({ message });
-
-            // console.log('new-message-received::', message.chat);
-            // /socket.emit(`new-message-received::${message.chat}`, newMessage);
             callback({
               success: true,
               message: "Your message sent successfully.",
@@ -219,8 +207,7 @@ const initializeSocketIO = (server: HttpServer) => {
            };
             callback(message);
 
-            console.log(`needRefresh::${data.userId}`);
-            console.log("===message ====>>>>>>", message);
+
             io.emit(`needRefresh::${data.userId}`, {success: true, message: `${data.userId} need refresh.`})
             io.emit(`isChatBlocked::${data.chatId}`, message);
         })
@@ -230,7 +217,6 @@ const initializeSocketIO = (server: HttpServer) => {
 
         // Leave a chat room
         socket.on('leave', (chatId, callback) => {
-          // console.log(`${socket.id} left room ${chatId}`);
 
           socket
             .to(chatId)
@@ -250,11 +236,7 @@ const initializeSocketIO = (server: HttpServer) => {
         socket.on('typing', (data, callback) => {
           const senderId = user._id.toString();
           let message = `${userProfile?.name} is `;
-          // console.log('==== sender {id, name } of user === ', {
-          //   senderId,
-          //   message,
-          //   data,
-          // });
+          
 
           if (data.status === true) {
             message += 'typing...';

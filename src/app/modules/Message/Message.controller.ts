@@ -25,13 +25,13 @@ const SendNewMessage = catchAsync(async (req: Request, res: Response) => {
 
 const uploadImageForSendMessage = catchAsync(async (req: Request, res: Response) =>{
 
-  console.log("===== req files ==== ", req.file)
+
   let image;
   if(req.file){
 
     image =  await storeFile('message', req?.file?.filename);
 
-    console.log("===== image =====>>>> ",image)
+
 
     sendResponse(res, {
       statusCode: httpStatus.CREATED,

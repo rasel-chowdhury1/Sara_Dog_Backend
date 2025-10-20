@@ -36,18 +36,13 @@ const checkOtpByEmail = async (email: string, purpose?: string) => {
     purpose
   });
 
-  console.log({ email });
 
-  console.log({ isExist });
 
   const isExpireOtp = await Otp.findOne({
     sentTo: email,
     expiredAt: { $lt: new Date() }, // Use the `$gt` operator for comparison
   });
 
-  console.log({ isExpireOtp });
-
-  console.log('.........');
 
   return { isExist, isExpireOtp };
 };
@@ -72,7 +67,7 @@ const updateOtpByEmail = async (
   purpose: string,
   payload: Record<string, any>,
 ) => {
-  console.log(payload);
+
   const otpUpdate = await Otp.findOneAndUpdate(
     {
       sentTo: email,

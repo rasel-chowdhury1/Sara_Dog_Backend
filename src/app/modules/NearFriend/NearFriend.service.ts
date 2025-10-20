@@ -227,7 +227,7 @@ const nearFriends = async (
     (friend) => friend.userId._id.toString() !== userId,
   );
 
-  console.log('Final Filtered Result:', filteredResult);
+
 
   // Step 5: Return the result enriched with PetProfiles and their data
   const enrichedResults = filResult.map((user) => {
@@ -236,8 +236,7 @@ const nearFriends = async (
       (pet) => pet.userId.toString() === user.userId._id.toString(),
     );
 
-    //  console.log("=== petProfile ====", petProfile)
-    //   console.log('===== user petProfile === ', user.petsProfileId);
+
 
     // let message = '';
     // let totalMatchItems = 8;

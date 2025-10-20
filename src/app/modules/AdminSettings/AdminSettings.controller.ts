@@ -19,7 +19,7 @@ const getSettings = catchAsync(async (req: Request, res: Response) => {
 const updateSettings = catchAsync(
   async (req: Request, res: Response) => {
     const settingsData = req.body;
-    console.log('====== Admin settings update request ==== >>> ', settingsData);
+
 
     const result = await AdminSettingsService.updateSettings(settingsData);
     sendResponse(res, {

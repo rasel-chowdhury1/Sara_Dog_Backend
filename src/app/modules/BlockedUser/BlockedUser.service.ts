@@ -42,7 +42,7 @@ const getBlockedUsers = async (user_id: string) => {
     .populate('blocked_users', 'fullName email')
     .exec(); // Ensure the query is executed
 
-  console.log('=== block entry = >>  ', blockEntry);
+
 
   if (!blockEntry) return [];
 

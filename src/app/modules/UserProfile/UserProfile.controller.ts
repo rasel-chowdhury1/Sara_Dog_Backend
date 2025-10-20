@@ -73,7 +73,7 @@ const updateById = catchAsync(async (req: Request, res: Response) => {
   }
 
   const result = await UserProfileService.updateById(id, data);
-  console.log('==== result ==== ', result);
+ 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

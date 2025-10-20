@@ -7,12 +7,11 @@ import { verifyToken } from '../utils/tokenManage';
 
 const auth = (...userRoles: string[]) => {
   return catchAsync(async (req, res, next) => {
-    // console.log('request data ======= > ', req);
-    console.log('headers ======= > ', req.headers.authorization);
+
     const token = req?.headers?.authorization?.split(' ')[1];
     // const token = req?.headers?.authorization;
 
-    console.log({ token });
+
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized!');
     }
@@ -22,7 +21,7 @@ const auth = (...userRoles: string[]) => {
       access_secret: config.jwt_access_secret as string,
     });
 
-    console.log('decoded data =====> ', { decodeData, userRoles });
+
 
     const { role, userId } = decodeData;
     const isUserExist = await User.IsUserExistById(userId);

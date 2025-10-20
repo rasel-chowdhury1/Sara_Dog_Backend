@@ -108,7 +108,7 @@ const otpVerifyAndCreateUser = async ({
     access_secret: config.jwt_access_secret as string,
   });
 
-  console.log(decodeData);
+
 
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
@@ -252,7 +252,7 @@ const getAllUserRatio = async (year: number) => {
 
 const getUserById = async (id: string) => {
   const result = await User.findById(id);
-  console.log(result);
+
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }

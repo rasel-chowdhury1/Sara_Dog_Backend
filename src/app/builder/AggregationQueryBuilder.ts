@@ -51,10 +51,9 @@ class AggregationQueryBuilder<T> {
     } else {
       const queryObj = { ...this.query };
 
-      console.log("==== before delete queryObj data === ", queryObj);
+          
       const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
       excludeFields.forEach((el) => delete queryObj[el]);
-      console.log('==== after delete queryObj data === ', queryObj);
 
       this.modelQuery = (this.modelQuery as Query<T[], T>).find(
         queryObj as FilterQuery<T>,

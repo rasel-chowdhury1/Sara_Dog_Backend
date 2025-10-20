@@ -25,7 +25,7 @@ const updateSettings = async (data: any) => {
 
   const result = await settings.save();
 
-//   console.log('====== Admin settings updated data ===== >>> ', result);
+;
 
   if (!result) {
     throw new AppError(

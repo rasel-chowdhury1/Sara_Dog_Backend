@@ -75,7 +75,6 @@ const getOneById = async (id: string): Promise<TUserProfile | null> => {
     'fullName isHero isSupported',
   );
 
-  console.log("==== product =====>>>>>> ", product)
   return product;
 };
 

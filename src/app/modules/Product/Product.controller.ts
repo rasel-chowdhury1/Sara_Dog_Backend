@@ -21,10 +21,10 @@ const addNewProduct = catchAsync(async (req: Request, res: Response) => {
     productData.image = storeFile('profile', req?.file?.filename);
   }
 
-  console.log("========== product data ======>> ", productData)
+
   const result = await ProductService.addNewProduct( productData);
 
-  console.log("===== result data ===",{result});
+
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

@@ -22,7 +22,6 @@ const supportEmailWithNodemailer = async (emailData: any) => {
       html: emailData.html, // html body
     };
     const info = await transporter.sendMail(mailOptions);
-    console.log('---> Email sent %s', info.response);
   } catch (error) {
     console.error('Error sending mail', error);
     throw error;

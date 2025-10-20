@@ -10,8 +10,7 @@ dotenv.config();
 const responseLogFilePath = path.resolve(__dirname, '../../../logs/ResponseTime.log');
 const errorLogFilePath = path.resolve(__dirname, '../../../logs/app.log');
 
-console.log('Response Log Path:', responseLogFilePath); 
-console.log('Error Log Path:', errorLogFilePath);
+
 
 
 interface ErrorLogEntry {

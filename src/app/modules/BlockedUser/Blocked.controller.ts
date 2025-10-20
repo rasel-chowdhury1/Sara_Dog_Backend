@@ -23,7 +23,7 @@ const blockUser = catchAsync(async (req: Request, res: Response) => {
 
 
 const unBlockUser = catchAsync(async (req: Request, res: Response) => {
-  console.log('req body -> ', req.body);
+
   const { userId } = req.user;
   const { blockUserId } = req.params;
 
