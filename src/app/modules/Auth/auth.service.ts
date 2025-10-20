@@ -20,6 +20,7 @@ import { otpServices } from '../otp/otp.service';
 import { otpSendEmail } from '../../utils/eamilNotifiacation';
 import { OTPVerifyAndCreateUserProps, userService } from '../user/user.service';
 import { TUser } from '../user/user.interface';
+import { TPurposeType } from '../otp/otp.interface';
 
 // Login
 const login = async (payload: TLogin) => {
@@ -83,11 +84,13 @@ const forgotPassword = async (email: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'User not found');
   }
 
-  const { isExist, isExpireOtp } = await otpServices.checkOtpByEmail(email);
+  const { isExist, isExpireOtp } = await otpServices.checkOtpByEmail(email, "forget-password");
   // console.log(isExist)
   // console.log(isExpireOtp)
 
   const { otp, expiredAt } = generateOptAndExpireTime();
+
+    let otpPurpose: TPurposeType = 'forget-password';
 
   if (isExist && !isExpireOtp) {
     throw new AppError(httpStatus.BAD_REQUEST, 'otp-exist. Check your email.');
@@ -98,12 +101,22 @@ const forgotPassword = async (email: string) => {
       status: 'pending',
     };
 
-    await otpServices.updateOtpByEmail(email, otpUpdateData);
+    await otpServices.updateOtpByEmail(email,"forget-password", otpUpdateData);
+  }else if (!isExist) {
+    await otpServices.createOtp({
+      name: "User",
+      sentTo: email,
+      receiverType: 'email',
+      purpose: otpPurpose,
+      otp,
+      expiredAt,
+    });
   }
 
   const jwtPayload = {
     email: email,
     userId: user?._id,
+    purpose: "forget-password"
   };
 
   const forgetToken = createToken({
@@ -115,7 +128,7 @@ const forgotPassword = async (email: string) => {
   process.nextTick(async () => {
     await otpSendEmail({
       sentTo: email,
-      subject: 'Your one time otp for forget password',
+      subject: 'Your one time otp for forgotten password',
       name: '',
       otp,
       expiredAt: expiredAt,
@@ -151,14 +164,14 @@ const forgotPasswordOtpMatch = async ({
   const { email } = decodeData;
   console.log(otp);
 
-  const isOtpMatch = await otpServices.otpMatch(email, otp);
+  const isOtpMatch = await otpServices.otpMatch(email, otp, "forget-password");
 
   if (!isOtpMatch) {
     throw new AppError(httpStatus.BAD_REQUEST, 'OTP did not match');
   }
 
   process.nextTick(async () => {
-    await otpServices.updateOtpByEmail(email, {
+    await otpServices.updateOtpByEmail(email,"forget-password", {
       status: 'verified',
     });
   });

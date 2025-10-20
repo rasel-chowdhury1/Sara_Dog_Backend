@@ -29,9 +29,11 @@ const createOtp = async ({
   return newOTP;
 };
 
-const checkOtpByEmail = async (email: string) => {
+const checkOtpByEmail = async (email: string, purpose?: string) => {
+
   const isExist = await Otp.findOne({
     sentTo: email,
+    purpose
   });
 
   console.log({ email });
@@ -50,11 +52,12 @@ const checkOtpByEmail = async (email: string) => {
   return { isExist, isExpireOtp };
 };
 
-const otpMatch = async (email: string, otp: string) => {
+const otpMatch = async (email: string, otp: string, purpose?: string) => {
   // console.log(email, otp);
   const isOtpMatch = await Otp.findOne({
     sentTo: email,
     otp,
+    purpose,
     status: 'pending',
     expiredAt: { $gt: new Date() },
   });
@@ -66,12 +69,14 @@ const otpMatch = async (email: string, otp: string) => {
 
 const updateOtpByEmail = async (
   email: string,
+  purpose: string,
   payload: Record<string, any>,
 ) => {
   console.log(payload);
   const otpUpdate = await Otp.findOneAndUpdate(
     {
       sentTo: email,
+      purpose
     },
     payload,
     { new: true },
@@ -88,9 +93,9 @@ const resendOtpEmail = async ({ token }: { token: string }) => {
     token,
     access_secret: config.jwt_access_secret as string,
   });
-  const { email } = decodeData;
+  const { email,purpose } = decodeData;
 
-  const { isExist, isExpireOtp } = await checkOtpByEmail(email);
+  const { isExist, isExpireOtp } = await checkOtpByEmail(email, purpose);
 
   const { otp, expiredAt } = generateOptAndExpireTime();
 
@@ -107,7 +112,7 @@ const resendOtpEmail = async ({ token }: { token: string }) => {
       expiredAt,
     };
 
-    await updateOtpByEmail(email, otpUpdateData);
+    await updateOtpByEmail(email,purpose, otpUpdateData);
   }
 
   process.nextTick(async () => {

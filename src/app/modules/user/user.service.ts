@@ -37,7 +37,7 @@ const createUserToken = async (payload: TUserCreate) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'User already exist!!');
   }
 
-  const { isExist, isExpireOtp } = await otpServices.checkOtpByEmail(email);
+  const { isExist, isExpireOtp } = await otpServices.checkOtpByEmail(email, "email-verification");
 
   const { otp, expiredAt } = generateOptAndExpireTime();
 
@@ -51,7 +51,7 @@ const createUserToken = async (payload: TUserCreate) => {
       expiredAt,
     };
 
-    await otpServices.updateOtpByEmail(email, otpUpdateData);
+    await otpServices.updateOtpByEmail(email, "email-verification", otpUpdateData);
   } else if (!isExist) {
     await otpServices.createOtp({
       name: fullName,
@@ -69,6 +69,7 @@ const createUserToken = async (payload: TUserCreate) => {
     password,
     phone,
     role,
+    purpose: "email-verification"
   };
 
   // send email
@@ -116,14 +117,14 @@ const otpVerifyAndCreateUser = async ({
   const { password, email, fullName, role, phone, about, professional } =
     decodeData;
 
-  const isOtpMatch = await otpServices.otpMatch(email, otp);
+  const isOtpMatch = await otpServices.otpMatch(email, otp, "email-verification");
 
   if (!isOtpMatch) {
     throw new AppError(httpStatus.BAD_REQUEST, 'OTP did not match');
   }
 
   process.nextTick(async () => {
-    await otpServices.updateOtpByEmail(email, {
+    await otpServices.updateOtpByEmail(email, "email-verification", {
       status: 'verified',
     });
   });

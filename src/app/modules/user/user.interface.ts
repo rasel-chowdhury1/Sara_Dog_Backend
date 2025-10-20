@@ -8,6 +8,7 @@ export interface TUserCreate {
   password: string;
   phone: string;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
+  purpose?: string;
 }
 
 export interface TUser extends TUserCreate {
