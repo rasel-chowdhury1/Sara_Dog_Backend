@@ -18,7 +18,7 @@ const otpSendEmail = async ({
     sentTo,
     subject,
     `
-      <div style="background-color: #ffffff; color:#FAFAFA; font-family: Arial, sans-serif; max-width: 600px; margin: auto;       padding: 20px; border: 1px solid #F97316; border-radius: 10px;">
+    <div style="background-color: #ffffff; color:#FAFAFA; font-family: Arial, sans-serif; max-width: 600px; margin: auto;       padding: 20px; border: 1px solid #F97316; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 20px;">
           <img src="https://api.woofspot.net/logo/sara.png" alt="Sara sns woof" style="max-width: 100%; height: auto;" />
         </div>
