@@ -22,8 +22,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    // origin: true,git ad
-    origin: 'https://woofspot.net',
+    origin: true,
+    // origin: 'https://woofspot.net',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   }),
